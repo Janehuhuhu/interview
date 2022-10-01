@@ -1,0 +1,8 @@
+{
+  "name": "interview",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:Janehuhuhu/interview.git",
+  "author": "胡静 <hujing13@meituan.com>",
+  "license": "MIT"
+}
