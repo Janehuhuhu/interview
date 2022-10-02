@@ -1,17 +1,23 @@
-var twoSum = function (nums, target) {
-  let index1 = -1
-  let index2 = -1
-  for (let i = 0; i < nums.length; i++) {
-    // if (nums[i] <= target) {
-    index2 = nums.findIndex(j => j === target - nums[i])
-    console.log('gggg', index2)
-    if (index2 !== -1 && index2 !== i) {
-      index1 = i
-      break;
+var isValid = function (s) {
+  const leftArr = ['(', '{', '[']
+  const map = new Map([
+    [')', '('],
+    ['}', '{'],
+    [']', '['],
+  ])
+  var arr = s.split('')
+  const tempArr = []
+  for (let i = 0; i < arr.length; i++) {
+    if (leftArr.includes(arr[i])) {
+      tempArr.push(arr[i])
+    } else {
+      const rightItem = map.get(arr[i])
+      console.log('sss', tempArr)
+      if (tempArr.pop() !== rightItem) return false
     }
-    // }
   }
-  return [index1, index2]
-}
+  if (tempArr.length) return false
+  return true
+};
 
-console.log(twoSum([-1, -2, -3, -4, -5], -8))
+console.log(isValid("[]"))
