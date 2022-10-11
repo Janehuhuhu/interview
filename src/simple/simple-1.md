@@ -62,3 +62,63 @@ if (s.length % 2) return false
 - 成对出现的元素首要考虑的方法是栈
 - 用元素长度直接判断，节约后续处理内存
 -  `map` 类型的数据可以用 `has` 判断有无
+
+<br>
+
+### 3. 爬楼梯
+假设你正在爬楼梯。需要 `n` 阶你才能到达楼顶。每次你可以爬 `1` 或 `2` 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+```js
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var climbStairs = function(n) {
+    let preValue = 0
+    let curValue = 0
+    let total = 1
+    for (let i = 1; i <= n; i++) {
+        preValue = curValue // 0 1 1
+        curValue = total // 1 1 2
+        total = preValue + curValue // 1 2 3
+    }
+    return total
+}
+```
+思路：
+- 我们用 `f(x)` 表示爬到第 `x` 级台阶的方案数，考虑最后一步可能跨了一级台阶，也可能跨了两级台阶, 所以最终结果是 *f(x)=f(x−1)+f(x−2)*
+- 不能用递归，可能导致内存溢出
+
+<br>
+
+### 二叉树的中序遍历
+给定一个二叉树的根节点 `root` ，返回 它的 中序 遍历 。
+
+```js
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+var inorderTraversal = function(root) {
+    const res = []
+    const inorder = function(root) {
+        if (!root) return
+        inorder(root.left)
+        res.push(root.val)
+        inorder(root.right)
+        return res
+    }
+    inorder(root)
+    return res
+};
+```
+思路：
+- 按照顺序遍历即可，遇到空终止
+- 前序：根节点 -> 左子树 -> 右子树；中序：左 -> 根 -> 右； 后序：左 -> 右 -> 根
