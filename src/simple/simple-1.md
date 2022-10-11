@@ -90,7 +90,7 @@ var climbStairs = function(n) {
 
 <br>
 
-### 二叉树的中序遍历
+### 4. 二叉树的中序遍历
 给定一个二叉树的根节点 `root` ，返回 它的 中序 遍历 。
 
 ```js
@@ -122,3 +122,60 @@ var inorderTraversal = function(root) {
 思路：
 - 按照顺序遍历即可，遇到空终止
 - 前序：根节点 -> 左子树 -> 右子树；中序：左 -> 根 -> 右； 后序：左 -> 右 -> 根
+
+<br>
+
+### 5. 对称二叉树
+给你一个二叉树的根节点 `root` ， 检查它是否轴对称。
+
+```js
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {boolean}
+ */
+var isSymmetric = function(root) {
+    const check = function(p, q) {
+        if (!p && !q) return true
+        if (!p || !q) return false
+        return p.val === q.val && check(p.left, q.right) && check(p.right, q.left)
+    }
+    return check(root, root)
+};
+```
+思路：
+- 实现这样一个递归函数，通过「同步移动」两个指针的方法来遍历这棵树，`p` 指针和 `q` 指针一开始都指向这棵树的根，随后 `p` 右移时，`q` 左移，`p` 左移时，`q` 右移。每次检查当前 `p` 和 `q` 节点的值是否相等，如果相等再判断左右子树是否对称
+
+<br>
+
+### 6. 二叉树的最大深度
+给定一个二叉树，找出其最大深度。二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+```js
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+var maxDepth = function(root) {
+    if (!root) return 0
+    const left = maxDepth(root.left)
+    const right = maxDepth(root.right)
+    return Math.max(left, right) + 1
+};
+```
+思路：
+- 节点为空时说明高度为 `0`，所以返回 `0`；节点不为空时则分别求左右子树的高度的最大值，同时加 `1` 表示当前节点的高度，返回该数值
