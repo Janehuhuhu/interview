@@ -179,3 +179,29 @@ var maxDepth = function(root) {
 ```
 思路：
 - 节点为空时说明高度为 `0`，所以返回 `0`；节点不为空时则分别求左右子树的高度的最大值，同时加 `1` 表示当前节点的高度，返回该数值
+
+<br>
+
+### 7. 买卖股票的最佳时机
+给定一个数组 `prices` ，它的第 `i` 个元素 `prices[i]` 表示一支给定股票第 `i` 天的价格。
+你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润
+```js
+/**
+ * @param {number[]} prices
+ * @return {number}
+ */
+var maxProfit = function(prices) {
+    let max = 0
+    let min = Infinity
+    for(let i = 0; i < prices.length; i++) {
+        if (prices[i] < min) {
+            min = prices[i]
+        } else if (max < prices[i] - min) {
+            max = prices[i] - min
+        }
+    }
+    return max
+};
+```
+思路：
+- 一次遍历，找到最低点为基准，如果后续遍历元素比比最低点小，则以当前点为基准，如果比他大且和基准的差值大于已有差值，则替换
