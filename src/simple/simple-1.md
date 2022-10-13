@@ -244,3 +244,45 @@ var hasCycle = function(head) {
 - 假想「乌龟」和「兔子」在链表上移动，「兔子」跑得快，「乌龟」跑得慢。当「乌龟」和「兔子」从链表上的同一个节点开始移动时，如果该链表中没有环，那么「兔子」将一直处于「乌龟」的前方；如果该链表中有环，那么「兔子」会先于「乌龟」进入环，并且一直在环内移动。等到「乌龟」进入环时，由于「兔子」的速度快，它一定会在某个时刻与乌龟相遇，即套了「乌龟」若干圈。
 
 - 我们可以根据上述思路来解决本题。具体地，我们定义两个指针，一快一慢。慢指针每次只移动一步，而快指针每次移动两步。初始时，慢指针在位置 head，而快指针在位置 head.next。这样一来，如果在移动的过程中，快指针反过来追上慢指针，就说明该链表为环形链表。否则快指针将到达链表尾部，该链表不为环形链表。
+
+<br>
+
+### 9.
+```js
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+
+/**
+ * @param {ListNode} headA
+ * @param {ListNode} headB
+ * @return {ListNode}
+ */
+var getIntersectionNode = function(headA, headB) {
+    if (!headA || !headB) return null
+    const arr = new Set()
+    let temp = headA
+    while(temp !== null) {
+        arr.add(temp)
+        temp = temp.next
+    }
+    temp = headB
+    while(temp !== null) {
+        if (arr.has(temp)) {
+            return temp
+        }
+        temp = temp.next
+    }
+    return null  
+};
+```
+思路：
+- 链表是否为空用 `temp !== null`, 用 `!temp` 可能会报错
+- 首先遍历链表 `headA`，并将链表 `headA` 中的每个节点加入哈希集合中。然后遍历链表 `headB`，对于遍历到的每个节点，判断该节点是否在哈希集合中：
+    - 如果当前节点不在哈希集合中，则继续遍历下一个节点；
+    - 如果当前节点在哈希集合中，则后面的节点都在哈希集合中，即从当前节点开始的所有节点都在两个链表的相交部分，因此在链表 `headB` 中遍历到的第一个在哈希集合中的节点就是两个链表相交的节点，返回该节点。
+如果链表 `headB` 中的所有节点都不在哈希集合中，则两个链表不相交，返回 `null`。
