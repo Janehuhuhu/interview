@@ -179,3 +179,68 @@ var maxDepth = function(root) {
 ```
 思路：
 - 节点为空时说明高度为 `0`，所以返回 `0`；节点不为空时则分别求左右子树的高度的最大值，同时加 `1` 表示当前节点的高度，返回该数值
+
+<br>
+
+### 7. 只出现一次的数字
+给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var singleNumber = function(nums) {
+    const arr = new Set()
+    for (let i = 0; i < nums.length; i++) {
+        if (arr.has(nums[i])) {
+            arr.delete(nums[i])
+        } else {
+            arr.add(nums[i])
+        }
+    }
+    return [...arr][0]
+};
+```
+思路：
+- 使用集合存储数字。遍历数组中的每个数字，如果集合中没有该数字，则将该数字加入集合，如果集合中已经有该数字，则将该数字从集合中删除，最后剩下的数字就是只出现一次的数字。
+
+<br>
+
+### 8. 环形链表
+给你一个链表的头节点 `head` ，判断链表中是否有环。
+如果链表中有某个节点，可以通过连续跟踪 `next` 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 `pos` 来表示链表尾连接到链表中的位置（索引从 `0` 开始）。注意：`pos` 不作为参数进行传递 。仅仅是为了标识链表的实际情况。
+如果链表中存在环 ，则返回 `true` 。 否则，返回 `false`
+```js
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+
+/**
+ * @param {ListNode} head
+ * @return {boolean}
+ */
+var hasCycle = function(head) {
+    if (head === null || head.next === null) {
+        return false
+    }
+    let slow = head
+    let fast = head.next
+
+    while(slow !== fast) {
+        if (fast === null || fast.next === null) {
+            return false
+        }
+        slow = slow.next
+        fast = fast.next.next
+    }
+    return true
+};
+```
+思路：
+- 假想「乌龟」和「兔子」在链表上移动，「兔子」跑得快，「乌龟」跑得慢。当「乌龟」和「兔子」从链表上的同一个节点开始移动时，如果该链表中没有环，那么「兔子」将一直处于「乌龟」的前方；如果该链表中有环，那么「兔子」会先于「乌龟」进入环，并且一直在环内移动。等到「乌龟」进入环时，由于「兔子」的速度快，它一定会在某个时刻与乌龟相遇，即套了「乌龟」若干圈。
+
+- 我们可以根据上述思路来解决本题。具体地，我们定义两个指针，一快一慢。慢指针每次只移动一步，而快指针每次移动两步。初始时，慢指针在位置 head，而快指针在位置 head.next。这样一来，如果在移动的过程中，快指针反过来追上慢指针，就说明该链表为环形链表。否则快指针将到达链表尾部，该链表不为环形链表。

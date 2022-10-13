@@ -1,22 +1,19 @@
-var climbStairs = function (n) {
-  // if (n < 1) return
-  // if (n === 1) {
-  //   return 1
-  // } else if (n === 2) {
-  //   return 2
-  // } else {
-  //   return climbStairs(n - 1) + climbStairs(n - 2)
-  // }
-  let preValue = 0
-  let curValue = 1
-  let total = 0
-  for (let i = 1; i < n; i++) {
-    total = preValue + curValue // 1 2 3 
-    preValue = curValue // 1 1 2
-    curValue = total // 1 2 3
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var singleNumber = function (nums) {
+  const arr = new Set()
+  for (let i = 0; i < nums.length; i++) {
+    if (arr.has(nums[i])) {
+      arr.delete(nums[i])
+    } else {
+      arr.add(nums[i])
+    }
   }
-  return total
+  console.log('aa', [...arr][0])
+  return arr[0]
 };
 console.time()
-console.log(climbStairs(20))
+console.log(singleNumber([2, 2, 1]))
 console.timeEnd()
