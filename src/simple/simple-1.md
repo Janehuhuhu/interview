@@ -287,3 +287,29 @@ var getIntersectionNode = function(headA, headB) {
     - 如果当前节点不在哈希集合中，则继续遍历下一个节点；
     - 如果当前节点在哈希集合中，则后面的节点都在哈希集合中，即从当前节点开始的所有节点都在两个链表的相交部分，因此在链表 `headB` 中遍历到的第一个在哈希集合中的节点就是两个链表相交的节点，返回该节点。
 如果链表 `headB` 中的所有节点都不在哈希集合中，则两个链表不相交，返回 `null`。
+
+<br>
+
+### 10. 买卖股票的最佳时机
+给定一个数组 `prices` ，它的第 `i` 个元素 `prices[i]` 表示一支给定股票第 `i` 天的价格。
+你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润
+```js
+/**
+ * @param {number[]} prices
+ * @return {number}
+ */
+var maxProfit = function(prices) {
+    let max = 0
+    let min = Infinity
+    for(let i = 0; i < prices.length; i++) {
+        if (prices[i] < min) {
+            min = prices[i]
+        } else if (max < prices[i] - min) {
+            max = prices[i] - min
+        }
+    }
+    return max
+};
+```
+思路：
+- 一次遍历，找到最低点为基准，如果后续遍历元素比比最低点小，则以当前点为基准，如果比他大且和基准的差值大于已有差值，则替换
