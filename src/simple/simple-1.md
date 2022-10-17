@@ -345,3 +345,34 @@ var maxProfit = function(prices) {
 ```
 思路：
 - 循环遍历数组 `nums` 并将数组中的每个元素加入哈希映射中。在这之后，我们遍历哈希映射中的所有键值对，返回值最大的键
+
+<br>
+
+### 12. 反转链表
+给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
+```js
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var reverseList = function(head) {
+    let prev = null
+    let cur = head
+    while(cur) {
+        const next = cur.next
+        cur.next = prev
+        prev = cur
+        cur = next
+    }
+    return prev
+};
+```
+思路:
+- 在遍历链表时，将当前节点的 `next` 指针改为指向前一个节点。由于节点没有引用其前一个节点，因此必须事先存储其前一个节点。在更改引用之前，还需要存储后一个节点。最后返回新的头引用。
