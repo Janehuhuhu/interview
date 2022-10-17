@@ -1,22 +1,28 @@
-var climbStairs = function (n) {
-  // if (n < 1) return
-  // if (n === 1) {
-  //   return 1
-  // } else if (n === 2) {
-  //   return 2
-  // } else {
-  //   return climbStairs(n - 1) + climbStairs(n - 2)
-  // }
-  let preValue = 0
-  let curValue = 1
-  let total = 0
-  for (let i = 1; i < n; i++) {
-    total = preValue + curValue // 1 2 3 
-    preValue = curValue // 1 1 2
-    curValue = total // 1 2 3
-  }
-  return total
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+ var majorityElement = function(nums) {
+  const map = new Map()
+  let res
+  nums.forEach(item => {
+      if (map.has(item)) {
+          map.set(item, map.get(item) + 1)
+      } else {
+          map.set(item, 1)
+      }
+  })
+
+  const threshold = Math.floor(nums.length / 2)
+  map.forEach((value, key) => {
+    console.log('sssss', key, value, threshold)
+      if (value > threshold) {
+         res = key
+      }
+  })
+  return res
+
 };
 console.time()
-console.log(climbStairs(20))
+console.log(majorityElement([3,2,3]))
 console.timeEnd()

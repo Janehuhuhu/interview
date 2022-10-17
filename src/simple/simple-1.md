@@ -205,3 +205,35 @@ var maxProfit = function(prices) {
 ```
 思路：
 - 一次遍历，找到最低点为基准，如果后续遍历元素比比最低点小，则以当前点为基准，如果比他大且和基准的差值大于已有差值，则替换
+
+<br>
+
+### 8. 多数元素
+给定一个大小为 `n` 的数组 `nums` ，返回其中的多数元素。多数元素是指在数组中出现次数 大于 `⌊ n/2 ⌋` 的元素。
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+ var majorityElement = function(nums) {
+  const map = new Map()
+  let res
+  nums.forEach(item => {
+      if (map.has(item)) {
+          map.set(item, map.get(item) + 1)
+      } else {
+          map.set(item, 1)
+      }
+  })
+
+  const threshold = Math.floor(nums.length / 2)
+  map.forEach((value, key) => {
+      if (value > threshold) {
+         res = key
+      }
+  })
+  return res
+};
+```
+思路：
+- 循环遍历数组 `nums` 并将数组中的每个元素加入哈希映射中。在这之后，我们遍历哈希映射中的所有键值对，返回值最大的键
