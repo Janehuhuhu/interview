@@ -313,3 +313,34 @@ var maxProfit = function(prices) {
 ```
 思路：
 - 一次遍历，找到最低点为基准，如果后续遍历元素比比最低点小，则以当前点为基准，如果比他大且和基准的差值大于已有差值，则替换
+
+<br>
+
+### 11. 翻转二叉树
+给你一棵二叉树的根节点 `root` ，翻转这棵二叉树，并返回其根节点。
+```js
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {TreeNode}
+ */
+var invertTree = function(root) {
+    if (root === null) {
+        return null
+    }
+    const left = invertTree(root.left)
+    const right = invertTree(root.right)
+    root.left = right
+    root.right = left
+    return root
+}; 
+```
+思路：
+- 递归：我们从根节点开始，递归地对树进行遍历，并从叶子节点先开始翻转。如果当前遍历到的节点 `root` 的左右两棵子树都已经翻转，那么我们只需要交换两棵子树的位置，即可完成以 `root` 为根节点的整棵子树的翻转
