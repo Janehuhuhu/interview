@@ -316,7 +316,70 @@ var maxProfit = function(prices) {
 
 <br>
 
-### 11. 翻转二叉树
+### 11. 多数元素
+给定一个大小为 `n` 的数组 `nums` ，返回其中的多数元素。多数元素是指在数组中出现次数 大于 `⌊ n/2 ⌋` 的元素。
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+ var majorityElement = function(nums) {
+  const map = new Map()
+  let res
+  nums.forEach(item => {
+      if (map.has(item)) {
+          map.set(item, map.get(item) + 1)
+      } else {
+          map.set(item, 1)
+      }
+  })
+
+  const threshold = Math.floor(nums.length / 2)
+  map.forEach((value, key) => {
+      if (value > threshold) {
+         res = key
+      }
+  })
+  return res
+};
+```
+思路：
+- 循环遍历数组 `nums` 并将数组中的每个元素加入哈希映射中。在这之后，我们遍历哈希映射中的所有键值对，返回值最大的键
+
+<br>
+
+### 12. 反转链表
+给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
+```js
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var reverseList = function(head) {
+    let prev = null
+    let cur = head
+    while(cur) {
+        const next = cur.next
+        cur.next = prev
+        prev = cur
+        cur = next
+    }
+    return prev
+};
+```
+思路:
+- 在遍历链表时，将当前节点的 `next` 指针改为指向前一个节点。由于节点没有引用其前一个节点，因此必须事先存储其前一个节点。在更改引用之前，还需要存储后一个节点。最后返回新的头引用。
+
+<br>
+
+### 13. 翻转二叉树
 给你一棵二叉树的根节点 `root` ，翻转这棵二叉树，并返回其根节点。
 ```js
 /**
