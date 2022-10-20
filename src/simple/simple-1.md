@@ -443,3 +443,28 @@ var isPalindrome = function(head) {
 思路：
 - 正确的比较方式是：*node_1.val == node_2.val*，而 *node_1 == node_2* 是错误的。所以不能逆序再比较
 - 思路： 复制链表值到数组列表中。使用双指针法判断是否为回文。
+
+<br>
+
+### 15. 移动零
+给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。请注意 ，必须在不复制数组的情况下原地对数组进行操作。
+```js
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var moveZeroes = function(nums) {
+    let j = 0
+    for(let i = 0; i < nums.length; i++) {
+        if (nums[i] !== 0) {
+            nums[j++] = nums[i]
+        }
+    }
+    for(let i = j; i < nums.length; i++) {
+        nums[i] = 0
+    }
+    return nums
+};
+```
+思路：
+- 第一次遍历，将非零元素全部移动到左侧。第二次遍历将剩下位置置零
