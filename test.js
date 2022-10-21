@@ -1,18 +1,22 @@
 /**
- * @param {number[]} nums
- * @return {void} Do not return anything, modify nums in-place instead.
+ * @param {number} n
+ * @return {number[]}
  */
- var moveZeroes = function(nums) {
-  let count = 0
-  while(count < nums.length) {
-    console.log('count', count)
-      if (nums[count] === 0) {
-        nums.push(nums[count])
-        nums.splice(count, 1)
-      } else {
-        count++
-      }
+ var countBits = function(n) {
+  const arr = []
+  for (let i = 0; i < n+1; i++) {
+      arr.push(count(i))
   }
-  return nums
+  return arr
+
+  function count(n) {
+      let num = 0
+      while(n) {
+          n &= (n - 1)
+          num++
+      }
+      console.log(num)
+      return num
+  }
 };
-console.log(moveZeroes([0,0,1]))
+console.log(countBits(2))

@@ -468,3 +468,59 @@ var moveZeroes = function(nums) {
 ```
 思路：
 - 第一次遍历，将非零元素全部移动到左侧。第二次遍历将剩下位置置零
+
+<br>
+
+### 16. 比特位计数
+给你一个整数 `n` ，对于 `0 <= i <= n` 中的每个 `i` ，计算其二进制表示中 `1` 的个数 ，返回一个长度为 `n + 1` 的数组 `ans` 作为答案。
+```js
+/**
+ * @param {number} n
+ * @return {number[]}
+ */
+var countBits = function(n) {
+    const arr = []
+    for (let i = 0; i < n+1; i++) {
+        arr.push(count(i))
+    }
+    return arr
+
+    function count(n) {
+        let num = 0
+        while(n) {
+            n &= (n - 1)
+            num++
+        }
+        return num
+    }
+};
+```
+思路：
+- 对于任意整数 `x`，令 `x=x & (x−1)`，该运算将 `x` 的二进制表示的最后一个 `1` 变成 `0`。因此，对 `x` 重复该操作，直到 `x` 变成 `0`，则操作次数即为 `x` 的「一比特数」
+
+<br>
+
+### 17. 找到所有数组中消失的数字
+给你一个含 `n` 个整数的数组 `nums` ，其中 `nums[i]` 在区间 `[1, n]` 内。请你找出所有在 `[1, n]` 范围内但没有出现在 `nums` 中的数字，并以数组的形式返回结果。
+```js
+/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+var findDisappearedNumbers = function(nums) {
+    const set = new Set(nums)
+    const arr = []
+    const res = []
+    for (let i = 0; i < nums.length; i++) {
+        arr.push(i + 1)
+    }
+    for (let i = 0; i < arr.length; i++) {
+        if (!set.has(arr[i])) {
+            res.push(arr[i])
+        }
+    }
+    return res
+};
+```
+思路：
+- 哈希表
