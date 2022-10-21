@@ -524,3 +524,29 @@ var findDisappearedNumbers = function(nums) {
 ```
 思路：
 - 哈希表
+
+<br>
+
+### 18. 汉明距离
+两个整数之间的 汉明距离 指的是这两个数字对应二进制位不同的位置的数目。给你两个整数 `x` 和 `y`，计算并返回它们之间的汉明距离。
+```js
+/**
+ * @param {number} x
+ * @param {number} y
+ * @return {number}
+ */
+var hammingDistance = function(x, y) {
+    let res = 0
+    let z = x ^ y
+    while(z !== 0) {
+        z &= z - 1
+        res++
+    }
+    return res
+};
+```
+思路：
+- 先按位异或，再按上题 `Brian Kernighan` 算法计算
+    - &：按位与，两位同时为“1”，结果才为“1”，否则为0
+    - ^: 按位异或，如果两个相应位为“异”（值不同），则该位结果为1，否则为0
+    - |：按位或，参加运算的两个对象只要有一个为1，其值为1
