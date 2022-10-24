@@ -1,22 +1,22 @@
 /**
- * @param {number} n
- * @return {number[]}
+ * @param {string} s
+ * @return {number}
  */
- var countBits = function(n) {
-  const arr = []
-  for (let i = 0; i < n+1; i++) {
-      arr.push(count(i))
-  }
-  return arr
-
-  function count(n) {
-      let num = 0
-      while(n) {
-          n &= (n - 1)
-          num++
-      }
-      console.log(num)
-      return num
-  }
+var lengthOfLongestSubstring = function (s) {
+    let maxLen = 0
+    const arr = new Set()
+    let rightPos = 0
+    for (let i = 0; i < s.length; i++) {
+        console.log('i', i, !i)
+        if (i !== 0) {
+            arr.delete(s.charAt(i - 1))
+        }
+        while (rightPos < s.length && !arr.has(s.charAt(rightPos))) {
+            arr.add(s.charAt(rightPos))
+            rightPos++
+        }
+        maxLen = Math.max(maxLen, arr.size)
+    }
+    return maxLen
 };
-console.log(countBits(2))
+console.log(lengthOfLongestSubstring("pwwkew"))
