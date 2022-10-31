@@ -66,3 +66,27 @@ var longestPalindrome = function(s) {
 思路：
 - 边界情况即为子串长度为 *1* 或 *2* 的情况。我们枚举每一种边界情况，并从对应的子串开始不断地向两边扩展。如果两边的字母相同，我们就可以继续扩展，例如从 *P(i+1,j-1)* 扩展到 *P(i,j)*；如果两边的字母不同，我们就可以停止扩展，因为在这之后的子串都不能是回文串了。
 - `string.substring(from, to)` 方法从 `from` 位置截取到 `to` 位置，`to` 可选，没有设置时默认到末尾。`substr()` 方法可在字符串中截取从开始下标开始的指定数目的字符。
+
+<br>
+
+### 3.
+给定一个长度为 `n` 的整数数组 `height` 。有 `n` 条垂线，第 `i` 条线的两个端点是 (i, 0) 和 (i, height[i]) 。找出其中的两条线，使得它们与 `x` 轴共同构成的容器可以容纳最多的水。返回容器可以储存的最大水量。
+```js
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+var maxArea = function(height) {
+    let area = 0
+    let left = 0
+    let right = height.length - 1
+    while(left < right) {
+        const curArea = Math.min(height[left], height[right]) * (right - left)
+        if (curArea > area) area = curArea
+        height[left] > height[right] ? right-- : left++
+    }
+    return area
+};
+```
+思路：
+- 双指针法：求出当前双指针对应的容器的容量；对应数字较小的那个指针以后不可能作为容器的边界了，将其丢弃，并移动对应的指针。
