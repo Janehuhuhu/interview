@@ -26,3 +26,43 @@ var lengthOfLongestSubstring = function(s) {
 ```
 思路：
 - 滑动窗口：左指针向右移动一格，表示我们开始枚举下一个字符作为起始位置，然后我们可以不断地向右移动右指针，但需要保证这两个指针对应的子串中没有重复的字符。如果有重复的，记录的哈希表删除掉左指针指向的数据，然后左指针向右移动
+
+<br>
+
+### 2. 最长回文子串
+给你一个字符串 `s`，找到 `s` 中最长的回文子串。
+
+```js
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var longestPalindrome = function(s) {
+    let start = 0
+    let end = 0
+    for (let i = 0; i < s.length; i++) {
+        const [left1, right1] = expandAroundCenter(s, i, i)
+        const [left2, right2] = expandAroundCenter(s, i, i + 1)
+        if (right1 - left1 > end - start) {
+            start = left1
+            end = right1
+        }
+        if (right2 - left2 > end - start) {
+            start = left2
+            end = right2
+        }
+    }
+    return s.substring(start, end + 1)
+
+    function expandAroundCenter (s, left, right) {
+        while(left >=0 && right < s.length && s[left] === s[right]) {
+            --left
+            ++right
+        }
+        return [left + 1, right - 1]
+    }
+};
+```
+思路：
+- 边界情况即为子串长度为 *1* 或 *2* 的情况。我们枚举每一种边界情况，并从对应的子串开始不断地向两边扩展。如果两边的字母相同，我们就可以继续扩展，例如从 *P(i+1,j-1)* 扩展到 *P(i,j)*；如果两边的字母不同，我们就可以停止扩展，因为在这之后的子串都不能是回文串了。
+- `string.substring(from, to)` 方法从 `from` 位置截取到 `to` 位置，`to` 可选，没有设置时默认到末尾。`substr()` 方法可在字符串中截取从开始下标开始的指定数目的字符。

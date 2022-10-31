@@ -1,22 +1,34 @@
 /**
  * @param {string} s
- * @return {number}
+ * @return {string}
  */
-var lengthOfLongestSubstring = function (s) {
-    let maxLen = 0
-    const arr = new Set()
-    let rightPos = 0
+var longestPalindrome = function (s) {
+    let start = 0
+    let end = 0
+    console.log('s', s.length)
+
     for (let i = 0; i < s.length; i++) {
-        console.log('i', i, !i)
-        if (i !== 0) {
-            arr.delete(s.charAt(i - 1))
+        const [left1, right1] = expandAroundCenter(s, i, i)
+        const [left2, right2] = expandAroundCenter(s, i, i + 1)
+        if (right1 - left1 > end - start) {
+            start = left1
+            end = right1
         }
-        while (rightPos < s.length && !arr.has(s.charAt(rightPos))) {
-            arr.add(s.charAt(rightPos))
-            rightPos++
+        if (right2 - left2 > end - start) {
+            start = left2
+            end = right2
         }
-        maxLen = Math.max(maxLen, arr.size)
+        console.log('sss', i, start, end)
     }
-    return maxLen
+    return s.substring(start, end + 1)
+
+
+    function expandAroundCenter(s, left, right) {
+        while (left >= 0 && right < s.length && s[left] === s[right]) {
+            --left
+            ++right
+        }
+        return [left + 1, right - 1]
+    }
 };
-console.log(lengthOfLongestSubstring("pwwkew"))
+console.log(longestPalindrome("babad"))
