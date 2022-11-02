@@ -1,34 +1,48 @@
 /**
- * @param {string} s
- * @return {string}
+ * @param {number[]} nums
+ * @return {number[][]}
  */
-var longestPalindrome = function (s) {
-    let start = 0
-    let end = 0
-    console.log('s', s.length)
-
-    for (let i = 0; i < s.length; i++) {
-        const [left1, right1] = expandAroundCenter(s, i, i)
-        const [left2, right2] = expandAroundCenter(s, i, i + 1)
-        if (right1 - left1 > end - start) {
-            start = left1
-            end = right1
+var threeSum = function (nums) {
+    // let left = 0
+    // let right = nums.length
+    const arr = nums.sort((a, b) => a - b)
+    let res = []
+    if (!arr || arr.length < 3) return res
+    for (let i = 0; i < arr.length - 2; i++) {
+        // 第一个数大于 0，后面的数都比它大，肯定不成立了
+        if (arr[i] > 0) break
+        // 去掉重复情况
+        if (i > 0 && arr[i] === arr[i - 1]) continue
+        let left = i + 1
+        let right = arr.length - 1
+        if (i === 2) {
+            console.log('asss', left, right)
         }
-        if (right2 - left2 > end - start) {
-            start = left2
-            end = right2
+        while (left < right) {
+            if (i === 2) {
+                console.log('ggg', arr[i], arr[left], arr[right])
+            }
+            if (arr[i] + arr[left] + arr[right] === 0) {
+                if (i === 2) {
+                    console.log('rrrr', arr[i], arr[left], arr[right])
+                }
+                res.push([arr[i], arr[left], arr[right]])
+                left++
+                right--
+                // 现在要增加 left，减小 right，但是不能重复，比如: [-2, -1, -1, -1, 3, 3, 3], i = 0, left = 1, right = 6, [-2, -1, 3] 的答案加入后，需要排除重复的 -1 和 3
+                while (left < right && arr[left] === arr[left - 1]) {
+                    left++
+                }
+                while (left < right && arr[right] === arr[right + 1]) {
+                    right--
+                }
+            } else if (arr[i] + arr[left] + arr[right] > 0) {
+                right--
+            } else {
+                left++
+            }
         }
-        console.log('sss', i, start, end)
     }
-    return s.substring(start, end + 1)
-
-
-    function expandAroundCenter(s, left, right) {
-        while (left >= 0 && right < s.length && s[left] === s[right]) {
-            --left
-            ++right
-        }
-        return [left + 1, right - 1]
-    }
+    return res
 };
-console.log(longestPalindrome("babad"))
+console.log(threeSum([-1, 0, 1, 2, -1, -4, -2, -3, 3, 0, 4]))

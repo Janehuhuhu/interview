@@ -69,7 +69,7 @@ var longestPalindrome = function(s) {
 
 <br>
 
-### 3.
+### 3. 盛最多的水
 给定一个长度为 `n` 的整数数组 `height` 。有 `n` 条垂线，第 `i` 条线的两个端点是 (i, 0) 和 (i, height[i]) 。找出其中的两条线，使得它们与 `x` 轴共同构成的容器可以容纳最多的水。返回容器可以储存的最大水量。
 ```js
 /**
@@ -90,3 +90,58 @@ var maxArea = function(height) {
 ```
 思路：
 - 双指针法：求出当前双指针对应的容器的容量；对应数字较小的那个指针以后不可能作为容器的边界了，将其丢弃，并移动对应的指针。
+
+<br>
+
+### 4. 三数之和
+给你一个整数数组 `nums` ，判断是否存在三元组 *[nums[i], nums[j], nums[k]]* 满足 *i != j*、*i != k* 且 *j != k* ，同时还满足 *nums[i] + nums[j] + nums[k] == 0* 。请你返回所有和为 `0` 且不重复的三元组。注意：答案中不可以包含重复的三元组。
+```js
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+var threeSum = function(nums) {
+    // 带有负数的排序
+    const arr = nums.sort((a, b) => a - b)
+    let res = []
+    if (!arr || arr.length < 3) return res
+    for (let i = 0; i < arr.length - 2; i++) {
+        // 第一个数大于 0，后面的数都比它大，肯定不成立了
+        if (arr[i] > 0) break
+        // 去掉重复情况
+        if (i > 0 && arr[i] === arr[i - 1]) continue
+        let left = i + 1
+        let right = arr.length - 1
+        while(left < right) {
+            if (arr[i] + arr[left] + arr[right] === 0) {
+                res.push([arr[i], arr[left], arr[right]])
+                left++
+                right--
+                // 现在要增加 left，减小 right，但是不能重复，比如: [-2, -1, -1, -1, 3, 3, 3], i = 0, left = 1, right = 6, [-2, -1, 3] 的答案加入后，需要排除重复的 -1 和 3
+                while(left < right && arr[left] === arr[left - 1]){ 
+                    left++
+                }
+                while(left < right && arr[right] === arr[right + 1]) {
+                    right--
+                }
+            } else if (arr[i] + arr[left] + arr[right] > 0) {
+                right--
+            } else {
+                left++
+            }
+        }
+    }
+    return res
+};
+```
+思路：
+- 算法流程:
+    - 特判，对于数组长度 `n`，如果数组为 `null` 或者数组长度小于 3，返回 []。
+    - 对数组进行排序。（注意包含负数的排序方法）
+    - 遍历排序后数组：
+        - 若 nums[i]>0nums[i]>0：因为已经排序好，所以后面不可能有三个数加和等于 00，直接返回结果。
+        - 对于重复元素：跳过，避免出现重复解
+        - 令左指针 `L=i+1`，右指针 `R=n−1`，当 `L<R` 时，执行循环：
+            - 当 `nums[i]+nums[L]+nums[R]==0`，执行循环，判断左界和右界是否和下一位置重复，去除重复解。并同时将 `L,R` 移到下一位置，寻找新的解
+            - 若和大于 `0`，说明 `nums[R]` 太大，`R` 左移
+            - 若和小于 `0`，说明 `nums[L]` 太小，`L` 右移
