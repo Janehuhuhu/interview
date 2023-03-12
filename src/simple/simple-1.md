@@ -550,3 +550,74 @@ var hammingDistance = function(x, y) {
     - &：按位与，两位同时为“1”，结果才为“1”，否则为0
     - ^: 按位异或，如果两个相应位为“异”（值不同），则该位结果为1，否则为0
     - |：按位或，参加运算的两个对象只要有一个为1，其值为1
+
+<br>
+
+### 19. 二叉树的直径
+给定一棵二叉树，你需要计算它的直径长度。一棵二叉树的直径长度是任意两个结点路径长度中的最大值。这条路径可能穿过也可能不穿过根结点。
+```js
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+var diameterOfBinaryTree = function(root) {
+    let ans = 1
+    const depth = function(node) {
+        if (node === null) {
+            return 0
+        }
+        const left = depth(node.left)
+        const right = depth(node.right)
+        ans = Math.max(ans, left + right + 1)
+        return Math.max(left, right) + 1
+    }
+    depth(root)
+    return ans - 1
+};
+```
+思路：
+- 直径：指的是两个节点之间的路径长度，即从一个节点到达另一个节点需要穿过的路径长度。一条路径的长度为该路径经过的节点数减一，所以求直径（即求路径长度的最大值）等效于求路径经过节点数的最大值减一
+- 树的深度：左儿子为根的子树的深度L + 右儿子为根的子树的深度R + 1, 通过深度递归计算树的深度
+- 路径经过节点数的最大值：L + R + 1
+
+<br>
+
+### 20.
+给你两棵二叉树： `root1` 和 `root2` 。想象一下，当你将其中一棵覆盖到另一棵之上时，两棵树上的一些节点将会重叠（而另一些不会）。你需要将这两棵树合并成一棵新二叉树。合并的规则是：如果两个节点重叠，那么将这两个节点的值相加作为合并后节点的新值；否则，不为 `null` 的节点将直接作为新二叉树的节点。返回合并后的二叉树
+```js
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root1
+ * @param {TreeNode} root2
+ * @return {TreeNode}
+ */
+var mergeTrees = function(root1, root2) {
+    if (root1 === null) {
+        return root2
+    }
+    if (root2 === null) {
+        return root1
+    }
+    root1.val += root2.val
+    root1.left = mergeTrees(root1.left, root2.left)
+    root1.right = mergeTrees(root1.right, root2.right)
+    return root1
+};
+```
+思路：
+- 递归，注意要把为 `null` 的情况先抛出来，避免访问左右节点报错
