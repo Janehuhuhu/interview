@@ -145,3 +145,48 @@ var threeSum = function(nums) {
             - 当 `nums[i]+nums[L]+nums[R]==0`，执行循环，判断左界和右界是否和下一位置重复，去除重复解。并同时将 `L,R` 移到下一位置，寻找新的解
             - 若和大于 `0`，说明 `nums[R]` 太大，`R` 左移
             - 若和小于 `0`，说明 `nums[L]` 太小，`L` 右移
+
+<br>
+
+### 5.  电话号码的字母组合
+给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。答案可以按 任意顺序 返回。
+```js
+/**
+ * @param {string} digits
+ * @return {string[]}
+ */
+var letterCombinations = function(digits) {
+    const list = ['', '', 'abc', 'def', 'ghi', 'jkl', 'mno', 'pqrs', 'tuv', 'wxyz']
+    const res = []
+    const path = []
+    const len = digits.length
+    if (len === 0) {
+        return []
+    } 
+    if (len === 1) {
+        return list[digits[0]].split('')
+    }
+    backtracking(digits, 0)
+    return res
+
+    function backtracking(digits, index) {
+        const arr = list[digits[index]]
+        if (path.length === len) {
+            res.push(path.join(''))
+            return
+        } 
+        for (let i of arr) {
+            path.push(i)
+            backtracking(digits, index + 1)
+            path.pop()
+        }
+    }
+};
+```
+思路:
+- 数字和字母映射，通过一个数组来将下标和字母映射起来。
+- 边界条件判定，当digits为空时，返回[]，当digits长度为1时，返回其电话按键的字母。
+- 通过画图，我们可以很容易画出一棵多叉树，其叶子结点就是一对字母，利用数组path将其存储，而利用数组res存储path（需数组转字符串）。
+通过递归来进行嵌套 for 循环
+- 在递归过程中，若已经递归到底部，则停止递归，并将结果输出
+[回溯算法](https://juejin.cn/post/7034389080456560670)
