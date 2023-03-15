@@ -2,6 +2,7 @@
 - [1. 浏览器安全](#1浏览器安全)
 - [2. 模块化规范](#2模块化规范)
 - [3. 跨域](#3跨域)
+- [4. call、bind和apply](#4callbind和apply)
 
 <br>
 
@@ -109,11 +110,139 @@ jsonp 原理： 动态的添加了一个script标签，src指向跨域的一个�
 
 ## 4、call、bind和apply
 ### 4.1 区别
-- [区别](https://zhuanlan.zhihu.com/p/82340026)
-- 手写
+- apply: apply接受两个参数，第一个参数是this的指向，第二个参数是函数接受的参数，以数组的形式传入，且当第一个参数为null、undefined的时候，默认指向window(在浏览器中)，使用apply方法改变this指向后原函数会立即执行
+- call: call方法的第一个参数也是this的指向，后面传入的是一个参数列表（注意和apply传参的区别）。当一个参数为null或undefined的时候，表示指向window（在浏览器中），和apply一样，call也只是临时改变一次this指向，并立即执行
+- bind: bind方法和call很相似，第一参数也是this的指向，后面传入的也是一个参数列表(但是这个参数列表可以分多次传入，call则必须一次性传入所有参数)，但是它改变this指向后不会立即执行，而是返回一个永久改变this指向的函数
+
+详见：[区别](https://zhuanlan.zhihu.com/p/82340026)
+
+### 4.2 手写
+```js
+// call函数实现
+Function.prototype.myCall = function(context) {
+  // 判断调用对象
+  if (typeof this !== "function") {
+    console.error("type error");
+  }
+
+  // 获取参数
+  let args = [...arguments].slice(1),
+    result = null;
+
+  // 判断 context 是否传入，如果未传入则设置为 window
+  context = context || window;
+
+  // 将调用函数设为对象的方法
+  context.fn = this;
+
+  // 调用函数
+  result = context.fn(...args);
+
+  // 将属性删除
+  delete context.fn;
+
+  return result;
+};
+```
+
+```js
+// apply 函数实现
+Function.prototype.myApply = function(context) {
+  // 判断调用对象是否为函数
+  if (typeof this !== "function") {
+    throw new TypeError("Error");
+  }
+
+  let result = null;
+
+  // 判断 context 是否存在，如果未传入则为 window
+  context = context || window;
+
+  // 将函数设为对象的方法
+  context.fn = this;
+
+  // 调用方法
+  if (arguments[1]) {
+    result = context.fn(...arguments[1]);
+  } else {
+    result = context.fn();
+  }
+
+  // 将属性删除
+  delete context.fn;
+
+  return result;
+};
+```
+
+```js
+// bind 函数实现
+Function.prototype.bind = function(context) {
+  //返回一个绑定this的函数，我们需要在此保存this
+  let self = this
+      // 可以支持柯里化传参，保存参数
+  let arg = [...arguments].slice(1)
+      // 返回一个函数
+  return function() {
+    //同样因为支持柯里化形式传参我们需要再次获取存储参数
+    let newArg = [...arguments]
+        // 返回函数绑定this，传入两次保存的参数
+        //考虑返回函数有返回值做了return
+    return self.apply(context, arg.concat(newArg))
+  }
+}
+```
+<br>
+
 
 ## 5、JavaScript 中的垃圾回收
-- [JavaScript 中的垃圾回收](https://zhuanlan.zhihu.com/p/23992332)
+### 5.1 简单介绍一下 V8 引擎的垃圾回收机制
+```
+V8的垃圾回收策略基于分代回收机制，该机制又基于 世代假说。该假说有两个特点：大部分新生对象倾向于早死；
+不死的对象，会活得更久。基于这个理论，现代垃圾回收算法根据对象的存活时间将内存进行了分代，并对不同分代的内存采用不同的高效算法进行垃圾回收。
+
+v8 的垃圾回收机制基于分代回收机制，这个机制又基于世代假说，这个假说有两个特点，一是新生的对象容易早死，另一个是不死的对象会活得更久。基于这个假说，v8 引擎将内存分为了新生代和老生代。
+
+新创建的对象或者只经历过一次的垃圾回收的对象被称为新生代。经历过多次垃圾回收的对象被称为老生代。
+
+新生代被分为 From 和 To 两个空间，To 一般是闲置的。当 From 空间满了的时候会执行 Scavenge 算法进行垃圾回收。当我们执行垃圾回收算法的时候应用逻辑将会停止，等垃圾回收结束后再继续执行。这个算法分为三步：
+
+（1）首先检查 From 空间的存活对象，如果对象存活则判断对象是否满足晋升到老生代的条件，如果满足条件则晋升到老生代。如果不满足条件则移动 To 空间。
+
+（2）如果对象不存活，则释放对象的空间。
+
+（3）最后将 From 空间和 To 空间角色进行交换。
+
+新生代对象晋升到老生代有两个条件：
+
+（1）第一个是判断是对象否已经经过一次 Scavenge 回收。若经历过，则将对象从 From 空间复制到老生代中；若没有经历，则复制到 To 空间。
+
+（2）第二个是 To 空间的内存使用占比是否超过限制。当对象从 From 空间复制到 To 空间时，若 To 空间使用超过 25%，则对象直接晋升到老生代中。设置 25% 的原因主要是因为算法结束后，两个空间结束后会交换位置，如果 To 空间的内存太小，会影响后续的内存分配。
+
+老生代采用了标记清除法和标记压缩法。标记清除法首先会对内存中存活的对象进行标记，标记结束后清除掉那些没有标记的对象。由于标记清除后会造成很多的内存碎片，不便于后面的内存分配。所以了解决内存碎片的问题引入了标记压缩法。
+
+由于在进行垃圾回收的时候会暂停应用的逻辑，对于新生代方法由于内存小，每次停顿的时间不会太长，但对于老生代来说每次垃圾回收的时间长，停顿会造成很大的影响。 为了解决这个问题 V8 引入了增量标记的方法，将一次停顿进行的过程分为了多步，每次执行完一小步就让运行逻辑执行一会，就这样交替运行。
+```
+详见：[深入理解V8的垃圾回收原理](https://www.jianshu.com/p/b8ed21e8a4fb)、[JavaScript 中的垃圾回收](https://zhuanlan.zhihu.com/p/23992332)
+
+<br>
+
+### 5.2 哪些操作会造成内存泄漏？
+不再用到的内存，没有及时释放，就叫做内存泄漏（memory leak）。
+```
+第一种情况是我们由于使用未声明的变量，而意外的创建了一个全局变量，而使这个变量一直留在内存中无法被回收。
+
+第二种情况是我们设置了 setInterval 定时器，而忘记取消它，如果循环函数有对外部变量的引用的话，那么这个变量会被一直留
+在内存中，而无法被回收。
+
+第三种情况是我们获取一个 DOM 元素的引用，而后面这个元素被删除，由于我们一直保留了对这个元素的引用，所以它也无法被回
+收。
+
+第四种情况是不合理的使用闭包，从而导致某些变量一直被留在内存当中。
+```
+详见： [JavaScript 内存泄漏教程](https://www.ruanyifeng.com/blog/2017/04/memory-leak.html)、 [4类 JavaScript 内存泄漏及如何避免](https://jinlong.github.io/2016/05/01/4-Types-of-Memory-Leaks-in-JavaScript-and-How-to-Get-Rid-Of-Them/)
+
+<br>
 
 ## 6、js 的防抖和节流
 
