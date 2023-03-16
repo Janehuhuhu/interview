@@ -245,9 +245,163 @@ v8 的垃圾回收机制基于分代回收机制，这个机制又基于世代�
 <br>
 
 ## 6、js 的防抖和节流
+### 6.1 概念
+- 节流: n 秒内只运行一次，若在 n 秒内重复触发，只有一次生效
+- 防抖: n 秒后在执行该事件，若在 n 秒内被重复触发，则重新计时
+<img src="./imgs/debounce.png" />
+
+### 6.2 实现
+防抖
+```js
+function debounce(func, wait) {
+    let timeout;
+
+    return function () {
+        let context = this; // 保存this指向
+        let args = arguments; // 拿到event对象
+
+        clearTimeout(timeout)
+        timeout = setTimeout(function(){
+            func.apply(context, args)
+        }, wait);
+    }
+}
+```
+
+节流
+```js
+function throttled2(fn, delay = 500) {
+  let timer = null
+  return function (...args) {
+    if (!timer) {
+      timer = setTimeout(() => {
+        fn.apply(this, args)
+        timer = null
+      }, delay);
+    }
+  }
+}
+```
+
+### 6.3 应用场景
+防抖在连续的事件，只需触发一次回调的场景有：
+- 搜索框搜索输入。只需用户最后一次输入完，再发送请求
+- 手机号、邮箱验证输入检测
+- 窗口大小resize。只需窗口调整完成后，计算窗口大小。防止重复渲染。
+
+节流在间隔一段时间执行一次回调的场景有：
+- 滚动加载，加载更多或滚到底部监听
+- 搜索框，搜索联想功能
+
+详见: [什么是防抖和节流](https://vue3js.cn/interview/JavaScript/debounce_throttle.html#%E9%9D%A2%E8%AF%95%E5%AE%98-%E4%BB%80%E4%B9%88%E6%98%AF%E9%98%B2%E6%8A%96%E5%92%8C%E8%8A%82%E6%B5%81-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0)
+
+<br>
 
 ## 7、js 的事件循环
+### 7.1 定义
+因为 js 是单线程运行的，在代码执行的时候，通过将不同函数的执行上下文压入执行栈中来保证代码的有序执行。同步任务进入主线程，即主执行栈，异步任务进入任务队列，主线程内的任务执行完毕为空，会去任务队列读取对应的任务，推入主线程执行。任务队列可以分为宏任务对列和微任务对列，当当前执行栈中的事件执行完毕后，js 引擎首先会判断微任务对列中是否有任务可以执行，如果有就将微任务队首的事件压入栈中执行。当微任务对列中的任务都执行完成后再去判断宏任务对列中的任务。
 
-## 8、 数据结构
-- 基本数据类型
-- reflect和proxy
+### 7.2 微任务和宏任务
+- 微任务是一个需要异步执行的函数，执行时机是在主函数执行结束之后、当前宏任务结束之前。包括了 promise 的回调、node 中的 process.nextTick 、对 Dom 变化监听的 MutationObserver。
+- 宏任务的时间粒度比较大，执行的时间间隔是不能精确控制的，对一些高实时性的需求就不太符合。包括了 script 脚本的执行、setTimeout ，setInterval ，setImmediate 一类的定时事件，还有如 I/O 操作、UI 渲染等。
+
+详见：[对事件循环的理解](https://vue3js.cn/interview/JavaScript/event_loop.html)
+<br>
+
+## 8、 浅拷贝和深拷贝
+### 8.1 概念
+- 浅拷贝指的是将一个对象的属性值复制到另一个对象，如果有的属性的值为引用类型的话，那么会将这个引用的地址复制给对象，因此两个对象会有同一个引用类型的引用
+- 深拷贝相对浅拷贝而言，如果遇到属性值为引用类型的时候，它新建一个引用类型并将对应的值复制给它，因此对象获得的一个新的引用类型而不是一个原有类型的引用。
+
+### 8.2 实现
+```js
+// 浅拷贝的实现;
+function shallowCopy(object) {
+  // 只拷贝对象
+  if (!object || typeof object !== "object") return;
+
+  // 根据 object 的类型判断是新建一个数组还是对象
+  let newObject = Array.isArray(object) ? [] : {};
+
+  // 遍历 object，并且判断是 object 的属性才拷贝
+  for (let key in object) {
+    if (object.hasOwnProperty(key)) {
+      newObject[key] = object[key];
+    }
+  }
+
+  return newObject;
+}
+
+// 深拷贝的实现;
+function deepCopy(object) {
+  if (!object || typeof object !== "object") return object;
+
+  let newObject = Array.isArray(object) ? [] : {};
+
+  for (let key in object) {
+    if (object.hasOwnProperty(key)) {
+      newObject[key] = deepCopy(object[key]);
+    }
+  }
+
+  return newObject;
+}
+```
+
+### 8.3 常见方式
+- 浅拷贝：Object.assign、Array.prototype.slice(), Array.prototype.concat()、[...arr]
+- 深拷贝：_.cloneDeep()、JSON.parse(JSON.stringify())
+
+详见：[深浅拷贝](https://vue3js.cn/interview/JavaScript/copy.html)
+
+<br>
+
+## 9. 数据结构
+### 9.1 数据类型
+#### 9.1.1 基本和引用数据类型
+js 一共有五种基本数据类型，分别是 Undefined、Null、Boolean、Number、String，还有在 ES6 中新增的 Symbol 和 ES10 中新增的 BigInt 类型。
+
+Symbol 代表创建后独一无二且不可变的数据类型，它的出现我认为主要是为了解决可能出现的全局变量冲突的问题。
+
+BigInt 是一种数字类型的数据，它可以表示任意精度格式的整数，使用 BigInt 可以安全地存储和操作大整数，即使这个数已经超出了 Number 能够表示的安全整数范围。
+
+引用类型：Array、Function、Object
+
+#### 9.1.2 存储区别
+基本数据类型存储在栈中，引用类型的对象存储于堆中
+
+<img src="./imgs/stack.png" >
+
+<img src="./imgs/heap.png" width="250">
+
+### 9.2 Symbol 类型的注意点？
+- Symbol 函数前不能使用 new 命令，否则会报错。
+- Symbol 函数可以接受一个字符串作为参数，表示对 Symbol 实例的描述，主要是为了在控制台显示，或者转为字符串时，比较容易区分。
+- Symbol 作为属性名，该属性不会出现在 for...in、for...of 循环中，也不会被 Object.keys()、Object.getOwnPropertyNames()、JSON.stringify() 返回。
+- Object.getOwnPropertySymbols 方法返回一个数组，成员是当前对象的所有用作属性名的 Symbol 值。
+- Symbol.for 接受一个字符串作为参数，然后搜索有没有以该参数作为名称的 Symbol 值。如果有，就返回这个 Symbol 值，否则就新建并返回一个以该字符串为名称的 Symbol 值。
+- Symbol.keyFor 方法返回一个已登记的 Symbol 类型值的 key。
+
+### 9.3 Set 和 WeakSet 结构？
+- ES6 提供了新的数据结构 Set。它类似于数组，但是成员的值都是唯一的，没有重复的值。
+- WeakSet 结构与 Set 类似，也是不重复的值的集合。但是 WeakSet 的成员只能是对象，而不能是其他类型的值。WeakSet 中的对象都是弱引用，即垃圾回收机制不考虑 WeakSet 对该对象的引用，
+
+### 9.4 Map 和 WeakMap 结构？
+- Map 数据结构。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键。
+- WeakMap 结构与 Map 结构类似，也是用于生成键值对的集合。但是 WeakMap 只接受对象作为键名（ null 除外），不接受其他类型的值作为键名。而且 WeakMap 的键名所指向的对象，不计入垃圾回收机制。
+
+### 9.5 什么是 Proxy ？
+Proxy 用于修改某些操作的默认行为，等同于在语言层面做出修改，所以属于一种“元编程”，即对编程语言进行编程。
+Proxy 可以理解成，在目标对象之前架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。Proxy 这个词的原意是代理，用在这里表示由它来“代理”某些操作，可以译为“代理器”。
+
+### 9.6 Reflect 对象创建目的？
+- 将 Object 对象的一些明显属于语言内部的方法（比如 Object.defineProperty，放到 Reflect 对象上。
+- 修改某些 Object 方法的返回结果，让其变得更合理。
+- 让 Object 操作都变成函数行为。
+- Reflect 对象的方法与 Proxy 对象的方法一一对应，只要是 Proxy 对象的方法，就能在 Reflect 对象上找到对应的方法。这就让 Proxy 对象可以方便地调用对应的 Reflect 方法，完成默认行为，作为修改行为的基础。也就是说，不管 Proxy 怎么修改默认行为，你总可以在 Reflect 上获取默认行为。
+
+应用场景：拦截和监视外部对对象的访问，在复杂操作前对操作进行校验或对所需资源进行管理
+
+详见：[ES6中Proxy](https://vue3js.cn/interview/es6/proxy.html#%E9%9D%A2%E8%AF%95%E5%AE%98-%E4%BD%A0%E6%98%AF%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3es6%E4%B8%ADproxy%E7%9A%84-%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
+
