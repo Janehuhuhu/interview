@@ -1,4 +1,5 @@
 ## 面试材料
+- [web 前端面试](https://vue3js.cn/interview/JavaScript/event_loop.html#%E4%B8%80%E3%80%81%E6%98%AF%E4%BB%80%E4%B9%88)
 - [互联网大厂面试每日一题](https://q.shanyue.tech/)
 - [前端硬核面试题](https://github.com/biaochenxuying/blog/blob/master/interview/fe-interview.md)
 - [Front-End-Interview-Notebook](https://github.com/CavsZhouyou/Front-End-Interview-Notebook)
