@@ -234,3 +234,53 @@ var removeNthFromEnd = function(head, n) {
 - start 先向前移动n步，之后 start 和 end 共同向前移动，此时二者的距离为 n，当 start 到尾部时，end 的位置恰好为倒数第 n 个节点
 - 因为要删除该节点，所以要移动到该节点的前一个才能删除，所以循环结束条件为 start.next != null
 - 删除后返回 pre.next，为什么不直接返回 head 呢，因为 head 有可能是被删掉的点
+
+<br>
+
+### 7. 删除链表的倒数第 N 个结点
+数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+```
+输入：n = 3
+输出：["((()))","(()())","(())()","()(())","()()()"]
+```
+```js
+/**
+ * @param {number} n
+ * @return {string[]}
+ */
+var generateParenthesis = function(n) {
+    const res = new Map()
+    res.set(0, [''])
+    res.set(1, ['()'])
+
+    for (let i = 2; i < n + 1; i++) {
+        const temp = []
+        for (let j = 0; j < i; j++) {
+            const start = res.get(j)
+            const end = res.get(i - j - 1)
+            for (let m = 0; m < start.length; m++) {
+                for (let n = 0; n < end.length; n++) {
+                    temp.push(`(${start[m]})${end[n]}`)
+                }
+            }
+        }
+         res.set(i, temp)
+    }
+    return res.get(n)
+};
+```
+
+算法：
+动态规划，dp[n] = ( + dp[i]的每一个元素 + ) + dp[n-1-i]的每一个元素
+```
+dp[0] = [""]
+dp[1] = ["()"]
+dp[2] = ["()()", "(())"]
+还是把新增的 ( 放在最左边
+对 dp[2] 来讲
+) 在第 0 个位置就是 ( + dp[0] + ) + dp[1], 即 "()()"
+) 在第 1 个位置就是 ( + dp[1] + ) + dp[0], 即 "(())"
+得出的公式就是
+dp[n] = ( + dp[i]的每一个元素 + ) + dp[n-1-i]的每一个元素
+```
+详见：[动态规划](https://juejin.cn/post/6945022770963021860)
