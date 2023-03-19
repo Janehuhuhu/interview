@@ -501,5 +501,5 @@ var findDuplicate = function(nums) {
 };
 ```
 解题思路：
-- dp[i] = max(dp[i], dp[j] + 1) for j in [0, i)， dp[i] 的值代表 nums 以 nums[i] 结尾的最长子序列长度，j range[0,i)
+- 动态规划：dp[i] = max(dp[i], dp[j] + 1) for j in [0, i)， dp[i] 的值代表 nums 以 nums[i] 结尾的最长子序列长度，j range[0,i)
 
