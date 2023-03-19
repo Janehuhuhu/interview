@@ -430,3 +430,76 @@ var countSubstrings = function(s) {
 - 找到所有的回文中心，数量为 2n-1
 - 顺着回文中心往外找所有符合的字串
 [详情](https://leetcode.cn/problems/palindromic-substrings/solution/hui-wen-zi-chuan-by-leetcode-solution/)
+
+<br>
+
+### 11. 寻找重复数
+```
+给定一个包含 n + 1 个整数的数组 nums ，其数字都在 [1, n] 范围内（包括 1 和 n），可知至少存在一个重复的整数。
+
+假设 nums 只有 一个重复的整数 ，返回 这个重复的数 。
+
+你设计的解决方案必须 不修改 数组 nums 且只用常量级 O(1) 的额外空间。
+
+示例 1：
+输入：nums = [1,3,4,2,2]
+输出：2
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var findDuplicate = function(nums) {
+    const arr = new Set()
+
+    for (let i of nums) {
+        if (arr.has(i)) {
+            return i
+        } else {
+            arr.add(i)
+        }
+    }
+};
+```
+
+<br>
+
+### 12. 寻找重复数
+```
+给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+
+子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+
+ 
+示例 1：
+输入：nums = [10,9,2,5,3,7,101,18]
+输出：4
+解释：最长递增子序列是 [2,3,7,101]，因此长度为 4
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+ var lengthOfLIS = function(nums) {
+  let deps = new Array(nums.length)
+  deps.fill(1)
+  let res = 0
+  
+  for (let i = 0; i < nums.length; i++) {
+    for (let j = 0; j < i; j++) {
+        if (nums[i] > nums[j]) {
+            deps[i] = Math.max(deps[i], deps[j] + 1)
+        }
+    }
+    res = Math.max(res, deps[i])
+  }
+  return res
+};
+```
+解题思路：
+- dp[i] = max(dp[i], dp[j] + 1) for j in [0, i)， dp[i] 的值代表 nums 以 nums[i] 结尾的最长子序列长度，j range[0,i)
+
