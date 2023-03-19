@@ -284,3 +284,149 @@ dp[2] = ["()()", "(())"]
 dp[n] = ( + dp[i]的每一个元素 + ) + dp[n-1-i]的每一个元素
 ```
 详见：[动态规划](https://juejin.cn/post/6945022770963021860)
+
+<br>
+
+
+### 8. 下一个排列
+```
+整数数组的一个 排列  就是将其所有成员以序列或线性顺序排列。
+
+例如，arr = [1,2,3] ，以下这些都可以视作 arr 的排列：[1,2,3]、[1,3,2]、[3,1,2]、[2,3,1] 。
+整数数组的 下一个排列 是指其整数的下一个字典序更大的排列。更正式地，如果数组的所有排列根据其字典顺序从小到大排列在一个容器中，那么数组的 下一个排列 就是在这个有序容器中排在它后面的那个排列。如果不存在下一个更大的排列，那么这个数组必须重排为字典序最小的排列（即，其元素按升序排列）。
+
+例如，arr = [1,2,3] 的下一个排列是 [1,3,2] 。
+类似地，arr = [2,3,1] 的下一个排列是 [3,1,2] 。
+而 arr = [3,2,1] 的下一个排列是 [1,2,3] ，因为 [3,2,1] 不存在一个字典序更大的排列。
+给你一个整数数组 nums ，找出 nums 的下一个排列。
+
+必须 原地 修改，只允许使用额外常数空间。
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var nextPermutation = function(nums) {
+  if (nums.length < 2) {
+    return nums
+  }
+  let m = nums.length - 2
+  let n = nums.length - 1
+   //从后向前找降序数，没有i为-1
+  while(m >= 0 && nums[m + 1] <= nums[m]) {
+      m--
+  }
+   //如果降序数存在，从后向前找第一个比降序数大的位置，并交换
+  if (m >= 0) {
+    while (nums[m] >= nums[n]) {
+        n--
+    }
+    const temp = nums[m]
+    nums[m] = nums[n]
+    nums[n] = temp
+  }
+    //降序数后面的位置从大到小排个序
+  const last  = nums.slice(m + 1)
+  nums.splice(m + 1, last.length , ...last.reverse())
+  return nums
+};
+```
+
+解题思路：[下个排序](https://leetcode.cn/problems/next-permutation/solution/xia-yi-ge-pai-lie-by-leetcode-solution/)
+
+<br>
+
+### 9. 组合总和
+```
+给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合 ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
+
+candidates 中的 同一个 数字可以 无限制重复被选取 。如果至少一个数字的被选数量不同，则两种组合是不同的。 
+
+对于给定的输入，保证和为 target 的不同组合数少于 150 个。
+
+输入：candidates = [2,3,6,7], target = 7
+输出：[[2,2,3],[7]]
+解释：
+2 和 3 可以形成一组候选，2 + 2 + 3 = 7 。注意 2 可以使用多次。
+7 也是一个候选， 7 = 7 。
+仅有这两种组合。
+```
+
+```js
+/**
+ * @param {number[]} candidates
+ * @param {number} target
+ * @return {number[][]}
+ */
+var combinationSum = function(candidates, target) {
+    const arr = []
+    const temp = []
+
+    function dfs(target, candidates, index) {
+        for (let i = index; i < candidates.length; i++) {
+            if (candidates[i] > target) continue
+            if (candidates[i] === target) {
+                temp.push(candidates[i])
+                arr.push(temp.slice()) // 必须浅拷贝，不然赋值后执行Pop又丢失了数值
+                temp.pop()
+            } else {
+                temp.push(candidates[i])
+                dfs(target - candidates[i], candidates, i)
+                temp.pop()
+            }
+        }
+    }
+    dfs(target, candidates, 0)
+    return arr                        
+};
+```
+
+解题思路：
+递归的方法，试着将每个元素放在数组里面，如果大于目标值，则放弃，如果等于目标值，则应该放在数组中，并作为其中一个解法输出，然后再pop出该值；如果小于目标值，则执行递归，递归后也要pop该值。最后遍历下一个元素
+
+<br>
+
+
+### 10. 组合总和
+```
+给你一个字符串 s ，请你统计并返回这个字符串中 回文子串 的数目。
+
+回文字符串 是正着读和倒过来读一样的字符串。
+
+子字符串 是字符串中的由连续字符组成的一个序列。
+
+具有不同开始位置或结束位置的子串，即使是由相同的字符组成，也会被视作不同的子串。
+
+示例 1：
+输入：s = "abc"
+输出：3
+解释：三个回文子串: "a", "b", "c"
+```
+
+```js
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var countSubstrings = function(s) {
+    let res = 0
+    const n = s.length
+    for (i = 0; i < 2 * n - 1; i++) {
+        let l = i / 2
+        let r = i / 2 + i % 2
+        while (l >= 0 && r < n && s.charAt(l) === s.charAt(r)) {
+            --l
+            ++r
+            ++res
+        }
+    }
+    return res
+};
+```
+
+解题思路：
+- 找到所有的回文中心，数量为 2n-1
+- 顺着回文中心往外找所有符合的字串
+[详情](https://leetcode.cn/problems/palindromic-substrings/solution/hui-wen-zi-chuan-by-leetcode-solution/)
