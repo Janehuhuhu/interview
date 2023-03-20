@@ -466,7 +466,7 @@ var findDuplicate = function(nums) {
 
 <br>
 
-### 12. 寻找重复数
+### 12. 最长递增子序列
 ```
 给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
 
@@ -503,3 +503,76 @@ var findDuplicate = function(nums) {
 解题思路：
 - 动态规划：dp[i] = max(dp[i], dp[j] + 1) for j in [0, i)， dp[i] 的值代表 nums 以 nums[i] 结尾的最长子序列长度，j range[0,i)
 
+<br>
+
+### 13. 完全平方数
+```
+给你一个整数 n ，返回 和为 n 的完全平方数的最少数量 。
+
+完全平方数 是一个整数，其值等于另一个整数的平方；换句话说，其值等于一个整数自乘的积。例如，1、4、9 和 16 都是完全平方数，而 3 和 11 不是。
+
+示例 1：
+输入：n = 12
+输出：3 
+解释：12 = 4 + 4 + 4
+```
+
+```js
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var numSquares = function(n) {
+    const arr = new Array(n + 1).fill(0)
+    for (let i = 1; i <= n; i++) {
+        let min = Number.MAX_VALUE
+        for (let j = 1; j * j <= i; j++) {
+            min = Math.min(min, arr[i - j * j])
+        }
+        arr[i] = min + 1 
+    }
+    return arr[n]
+};
+```
+
+解题思路：
+动态规划： arr[i]表示最少需要多少个数的平方来表示整数 i。j 为一个一个平方值的试，最终拿到最小值加上 j 的本身的平方值即1.
+
+<br>
+
+### 14. 最长连续序列
+```
+给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+
+请你设计并实现时间复杂度为 O(n) 的算法解决此问题。
+
+示例 1：
+输入：nums = [100,4,200,1,3,2]
+输出：4
+解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var longestConsecutive = function(nums) {
+  if (!nums.length) return 0
+  const arr = [...new Set(nums.sort((a,b) => a - b))]
+  const res = new Array(arr.length).fill(1)
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] === arr[i - 1] + 1) {
+      res[i] = res[i - 1] + 1
+    }
+  }
+  return Math.max(...res)
+};
+```
+
+解题思路
+动态规划：
+- 去重，因为两个相等的值不算是连续序列
+- 初始化，每个值都对应一个连续序列数
+- 遍历，如果后一个等于前一个值加1，则当前值为前一个结果+1，否则重新计数
+- 找出最大值
