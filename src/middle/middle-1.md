@@ -576,3 +576,110 @@ var longestConsecutive = function(nums) {
 - 初始化，每个值都对应一个连续序列数
 - 遍历，如果后一个等于前一个值加1，则当前值为前一个结果+1，否则重新计数
 - 找出最大值
+
+<br>
+
+### 15. 两数相加
+```
+给你两个 非空 的链表，表示两个非负的整数。它们每位数字都是按照 逆序 的方式存储的，并且每个节点只能存储 一位 数字。
+
+请你将两个数相加，并以相同形式返回一个表示和的链表。
+
+你可以假设除了数字 0 之外，这两个数都不会以 0 开头。
+
+示例 1：
+输入：l1 = [2,4,3], l2 = [5,6,4]
+输出：[7,0,8]
+解释：342 + 465 = 807.
+```
+
+```js
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} l1
+ * @param {ListNode} l2
+ * @return {ListNode}
+ */
+var addTwoNumbers = function(l1, l2) {
+    let prev = new ListNode(0)
+    let cur = prev
+    let last = 0
+    while(l1 != null || l2 != null || last) {
+        const x = l1 == null ? 0 : l1.val
+        const y = l2 == null ? 0 : l2.val
+        const sum = x + y + last
+
+        last = parseInt(sum / 10)
+        cur.next = new ListNode(sum % 10)
+        cur = cur.next
+        if (l1 != null) {
+            l1 = l1.next
+        }
+        if (l2 != null) {
+            l2 = l2.next
+        }
+    }
+    return prev.next
+};
+```
+
+解题思路
+- 一定要let prev = new ListNode(0)；let cur = prev，这样才能return出初始节点
+- 节点存不存在一定要用 null 判断，且用 == 而非 ===
+- 不要使用 && 给节点next赋值，因为结果可能为布尔值，导致一直循环
+
+<br>
+
+### 15. 最小路径和
+```
+给定一个包含非负整数的 m x n 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
+
+说明：每次只能向下或者向右移动一步。
+
+ 
+
+示例 1：
+输入：grid = [[1,3,1],[1,5,1],[4,2,1]]
+输出：7
+解释：因为路径 1→3→1→1→1 的总和最小。
+```
+
+```js
+/**
+ * @param {number[][]} grid
+ * @return {number}
+ */
+var minPathSum = function(grid) {
+    const m = grid.length
+    const n = grid[0].length
+    const dfs = new Array(m).fill(0).map(item => new Array(n).fill(0))
+    dfs[m - 1][n - 1] = grid[m - 1][n - 1]
+    for (let i = m - 1; i >=0; i--) {
+        for (let j = n - 1; j >=0; j--) {
+            if (i === m - 1 && j !== n - 1) {
+                 // 最后一行
+                dfs[i][j] = grid[i][j] + dfs[i][j + 1]
+            } else if (i !== m - 1 && j === n - 1) {
+                // 最后一列
+                dfs[i][j] = grid[i][j] + dfs[i + 1][j]
+            } else if (i !== m - 1 && j !== n - 1) {
+                // 中间位置
+                dfs[i][j] = grid[i][j] + Math.min(dfs[i + 1][j], dfs[i][j + 1])
+            }
+        }
+    }
+    return dfs[0][0]
+};
+```
+
+解题思路
+动态规划：创建二维数组,与原始网格的大小相同，dp[i][j] 表示从终点出发到 (i,j) 位置的最小路径和
+
+
+
