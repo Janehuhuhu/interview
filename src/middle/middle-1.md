@@ -682,4 +682,46 @@ var minPathSum = function(grid) {
 动态规划：创建二维数组,与原始网格的大小相同，dp[i][j] 表示从终点出发到 (i,j) 位置的最小路径和
 
 
+<br>
+
+### 16. 最大子数组和
+```
+给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+子数组 是数组中的一个连续部分。
+
+示例 1：
+输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出：6
+解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+ var maxSubArray = function(nums) {
+  const dfs = new Array(nums.length)
+  dfs[0] = nums[0]
+  let res = Number.MIN_SAFE_INTEGER
+  for (let i = 1; i < nums.length; i++) {
+     if(dfs[i - 1] > 0) {
+         dfs[i] = dfs[i - 1] + nums[i]
+     } else {
+         dfs[i] = nums[i]
+     }
+  }
+
+  for (let i of dfs) {
+      res = Math.max(res, i)
+  }
+  return res
+};
+```
+
+解题思路
+动态规划：dp[i]：表示以 nums[i] 结尾 的 连续 子数组的最大和
+- 如果 dp[i - 1] > 0，那么可以把 nums[i] 直接接在 dp[i - 1] 表示的那个数组的后面，得到和更大的连续子数组；
+- 如果 dp[i - 1] <= 0，那么 nums[i] 加上前面的数 dp[i - 1] 以后值不会变大。于是 dp[i] 「另起炉灶」，此时单独的一个 nums[i] 的值，就是 dp[i]
 
