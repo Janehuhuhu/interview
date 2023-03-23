@@ -725,3 +725,39 @@ var minPathSum = function(grid) {
 - 如果 dp[i - 1] > 0，那么可以把 nums[i] 直接接在 dp[i - 1] 表示的那个数组的后面，得到和更大的连续子数组；
 - 如果 dp[i - 1] <= 0，那么 nums[i] 加上前面的数 dp[i - 1] 以后值不会变大。于是 dp[i] 「另起炉灶」，此时单独的一个 nums[i] 的值，就是 dp[i]
 
+<br>
+
+### 17. 子集
+```
+给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+
+解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+
+示例 1：
+输入：nums = [1,2,3]
+输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+ var subsets = function(nums) {
+  let res = [[]]
+  for (let i = 0; i < nums.length; i++) {
+      const temp = JSON.parse(JSON.stringify(res))
+      const next = temp.map(item => {
+        item.push(nums[i])
+        return item
+      })
+      res = res.concat(next)
+  }
+  return res
+};
+```
+
+解题思路:
+- 每添加一个元素，创建一个子集合next, 为之前每个集合中的子集加该元素，然后合并。举个例子，原本集合为[]，增加元素1，则为[[],[1]]，增加元素2，则为[[],[1],[2],[1,2]],以此类推
+- 注意每次遍历创建子集合的时候，一定要深拷贝原集合，避免修改新子集合的时候影响原集合中元素。因为每个集合中的元素都为引用类型
+
