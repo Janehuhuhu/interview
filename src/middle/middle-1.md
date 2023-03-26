@@ -761,3 +761,97 @@ var minPathSum = function(grid) {
 - 每添加一个元素，创建一个子集合next, 为之前每个集合中的子集加该元素，然后合并。举个例子，原本集合为[]，增加元素1，则为[[],[1]]，增加元素2，则为[[],[1],[2],[1,2]],以此类推
 - 注意每次遍历创建子集合的时候，一定要深拷贝原集合，避免修改新子集合的时候影响原集合中元素。因为每个集合中的元素都为引用类型
 
+<br>
+
+### 18. 颜色分类
+```
+给定一个包含红色、白色和蓝色、共 n 个元素的数组 nums ，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+
+我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
+
+必须在不使用库内置的 sort 函数的情况下解决这个问题。
+
+示例 1：
+输入：nums = [2,0,2,1,1,0]
+输出：[0,0,1,1,2,2]
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var sortColors = function(nums) {
+    let index= 0
+
+    for (let i = 0; i < nums.length; i++) {
+        if (nums[i] === 0) {
+            let temp = nums[index]
+            nums[index] = 0
+            nums[i] = temp
+            index++
+        }
+    } 
+    for (let i = index; i < nums.length; i++) {
+        if (nums[i] === 1) {
+            let temp = nums[index]
+            nums[index] = 1
+            nums[i] = temp
+            index++
+        }
+    } 
+    return nums
+};
+```
+解题思路
+对数组进行两次遍历。在第一次遍历中，我们将数组中所有的 0 交换到数组的头部。在第二次遍历中，我们将数组中所有的1 交换到头部的0 之后。此时，所有的 2 都出现在数组的尾部，这样我们就完成了排序
+
+
+<br>
+
+### 19. 全排列
+```
+给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
+
+示例 1：
+
+输入：nums = [1,2,3]
+输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+var permute = function(nums) {
+    const res = []
+    // depth: 深度或第i个位置
+    // path: 每个可能的排列
+    // res: 最终结果
+    // used: 每加一层，这层能填充的可能数值减少，记录之前几层已经用过的值
+    function backtrack(depth, path, used) {
+        if (depth === nums.length) {
+            // 浅拷贝，避免后面pop值后被修改
+            res.push(path.slice())
+            return res
+        }
+        // 每到一层，遍历每个没有使用过的元素，往排列中填充
+        for (let i = 0; i < nums.length; i++) {
+            if (used[i]) continue
+            path.push(nums[i])
+            used[i] = true
+            backtrack(depth + 1, path, used)
+            // 回到上一层，进行状态重置
+            path.pop(nums[i])
+            used[i] = false
+        }
+    }
+    backtrack(0, [], [])
+    return res
+};
+```
+解题思路
+回溯/深度遍历： 
+- 把每个位置的元素当作一层，第一层即位置0可以填充所有的数组元素，第二层填充除第一层外的所有元素，第三层依次类推
+详见: [回溯](https://leetcode.cn/problems/permutations/solution/quan-pai-lie-by-leetcode-solution-2/)
