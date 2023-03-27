@@ -855,3 +855,56 @@ var permute = function(nums) {
 回溯/深度遍历： 
 - 把每个位置的元素当作一层，第一层即位置0可以填充所有的数组元素，第二层填充除第一层外的所有元素，第三层依次类推
 详见: [回溯](https://leetcode.cn/problems/permutations/solution/quan-pai-lie-by-leetcode-solution-2/)
+
+
+<br>
+
+### 20. 旋转图像
+```
+给定一个 n × n 的二维矩阵 matrix 表示一个图像。请你将图像顺时针旋转 90 度。
+
+你必须在 原地 旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要 使用另一个矩阵来旋转图像。
+
+示例 1：
+输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
+输出：[[7,4,1],[8,5,2],[9,6,3]]
+```
+
+```js
+/**
+ * @param {number[][]} matrix
+ * @return {void} Do not return anything, modify matrix in-place instead.
+ */
+var rotate = function(matrix) {
+    if (matrix.length === 0 || matrix.length !== matrix[0].length) {
+        return
+    }
+    const len = matrix.length
+
+    // 沿 / 线翻转
+    for (let i = 0; i < len; i++) {
+        // 注意 j 的遍历终止位置
+        for (let j = 0; j < len - i; j++) {
+            const temp = matrix[i][j]
+            // 注意下标!!!
+            matrix[i][j] = matrix[len - 1 - j][len - 1 - i]
+            matrix[len - 1 - j][len - 1 - i] = temp
+        }
+    }
+
+    // 水平翻转
+    const mid = parseInt(len / 2)
+    for (let i = 0; i < len / 2; i++) {
+        for (let j = 0; j < len; j++) {
+            const temp = matrix[i][j]
+            matrix[i][j] = matrix[len - 1 - i][j]
+            matrix[len - 1 - i][ j] = temp
+        }
+    }
+    return matrix
+};
+```
+
+解题思路
+- 先沿右上 - 左下的对角线翻转（270°+ 一次镜像），再沿水平中线上下翻转（−180°+ 一次镜像），可以实现顺时针 90 度的旋转效果
+- 注意兑换位置的下标和第二层的遍历截至位置，避免又替换回来
