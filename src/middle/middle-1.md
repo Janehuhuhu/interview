@@ -908,3 +908,42 @@ var rotate = function(matrix) {
 解题思路
 - 先沿右上 - 左下的对角线翻转（270°+ 一次镜像），再沿水平中线上下翻转（−180°+ 一次镜像），可以实现顺时针 90 度的旋转效果
 - 注意兑换位置的下标和第二层的遍历截至位置，避免又替换回来
+
+
+<br>
+
+### 21. 合并区间
+```
+以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。请你合并所有重叠的区间，并返回 一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间 。
+
+示例 1：
+输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+输出：[[1,6],[8,10],[15,18]]
+解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+```
+
+```js
+/**
+ * @param {number[][]} intervals
+ * @return {number[][]}
+ */
+var merge = function(intervals) {
+    if (!intervals.length) return []
+    // 升序排列
+    intervals.sort((a,b) => a[0] - b[0])
+    const res = []
+    for (let i = 0; i < intervals.length; i++) {
+        let last = res.length - 1
+        if (res.length && intervals[i][0] <= res[last][1]) {
+            res[last][1] = Math.max(intervals[i][1], res[last][1])
+        } else {
+            res.push(intervals[i])
+        }
+    }
+    return res
+};
+```
+
+解题思路
+- 按照左节点进行升序排序
+- 比较当前左节点与上一个序列中右节点，如果前者小于等于，则将上一个序列中的右节点替换成【当前右节点，上个序列右节点】的最大值。否则，将该节点添加到结果数组中
