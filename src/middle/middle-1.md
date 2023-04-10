@@ -947,3 +947,77 @@ var merge = function(intervals) {
 解题思路
 - 按照左节点进行升序排序
 - 比较当前左节点与上一个序列中右节点，如果前者小于等于，则将上一个序列中的右节点替换成【当前右节点，上个序列右节点】的最大值。否则，将该节点添加到结果数组中
+
+<br>
+
+### 22. 单词搜索
+```
+给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false 。
+
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+
+
+示例 1：
+输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
+输出：true
+```
+
+```js
+/**
+ * @param {character[][]} board
+ * @param {string} word
+ * @return {boolean}
+ */
+var exist = function(board, word) {
+    const h = board.length
+    const w = board[0].length
+    const visited = new Array(h);
+    for (let i = 0; i < visited.length; ++i) {
+        visited[i] = new Array(w).fill(false);
+    }    
+    const directions = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+
+    function check(i, j, k) {
+        let res = false
+        if (board[i][j] !== word.charAt(k)) {
+            return false
+        } else if (k === word.length - 1) {
+            return true
+        }
+        visited[i][j] = true
+        
+        for (let [dx, dy] of directions) {
+            const newi = i + dx
+            const newj = j + dy
+            if (newi >= 0 && newi < h && newj >= 0 && newj < w) {
+                if (!visited[newi][newj]) {
+                    const flag = check(newi, newj, k + 1)
+                    if (flag) {
+                        res = true
+                        break
+                    }
+                }
+            }
+        }
+        visited[i][j] = false
+        return res
+    }
+
+    for (let i = 0; i < h; i++) {
+        for (let j = 0; j < w; j++) {
+            const result = check(i, j, 0)
+            if (result) {
+                return true
+            }
+        }
+    }
+    return false
+}
+```
+
+解题思路：
+- 设函数 check(i,j,k) 表示判断以网格的 (i,j) 位置出发，能否搜索到单词 word[k..]，其中 
+word[k..] 表示字符串 word 从第 k 个字符开始的后缀子串。如果能搜索到，则返回 true，反之返回 
+false。
+- 为了防止重复遍历相同的位置，需要额外维护一个与board 等大的 visited 数组，用于标识每个位置是否被访问过。每次遍历相邻位置时，需要跳过已经被访问的位置。
+- 第三，为什么visit需要复位？因为当前格子作为中途某一处的起始点，并且走不通时，它是可以回退到上一个格子，并且选择其他方向重新开始的。而此时我们不希望当前格子的遍历路径影响到回退后新路径的尝试。
