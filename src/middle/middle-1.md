@@ -1021,3 +1021,38 @@ word[k..] 表示字符串 word 从第 k 个字符开始的后缀子串。如果�
 false。
 - 为了防止重复遍历相同的位置，需要额外维护一个与board 等大的 visited 数组，用于标识每个位置是否被访问过。每次遍历相邻位置时，需要跳过已经被访问的位置。
 - 第三，为什么visit需要复位？因为当前格子作为中途某一处的起始点，并且走不通时，它是可以回退到上一个格子，并且选择其他方向重新开始的。而此时我们不希望当前格子的遍历路径影响到回退后新路径的尝试。
+
+<br>
+
+### 23. 和为 K 的子数组
+```
+给你一个整数数组 nums 和一个整数 k ，请你统计并返回 该数组中和为 k 的连续子数组的个数 。
+
+示例 1：
+输入：nums = [1,1,1], k = 2
+输出：2
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+var subarraySum = function(nums, k) {
+    let count = 0
+    for (let i = 0; i < nums.length; i++) {
+        let temp = 0
+        for (let j = i; j < nums.length; j++) {
+            temp += nums[j]
+            if (temp === k) {
+                count++
+            }
+        }
+    }
+    return count
+};
+```
+
+解题思路：
+- 依次计算每个位置开头的子数组的和的可能性
