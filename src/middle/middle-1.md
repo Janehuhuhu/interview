@@ -1056,3 +1056,90 @@ var subarraySum = function(nums, k) {
 
 解题思路：
 - 依次计算每个位置开头的子数组的和的可能性
+
+<br>
+
+
+### 24. 除自身以外数组的乘积
+```
+给你一个整数数组 nums，返回 数组 answer ，其中 answer[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积 。
+
+题目数据 保证 数组 nums之中任意元素的全部前缀元素和后缀的乘积都在  32 位 整数范围内。
+
+请不要使用除法，且在 O(n) 时间复杂度内完成此题。
+
+
+示例 1:
+输入: nums = [1,2,3,4]
+输出: [24,12,8,6]
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+var productExceptSelf = function(nums) {
+    const res = new Array(nums.length)
+    res[0] = 1
+
+    // res[i] 表示索引 i 左侧所有元素的乘积,因为索引为 '0' 的元素左侧没有元素， 所以 res[0] = 1
+    for (let i = 1; i < nums.length; i++) {
+        res[i] = res[i - 1] * nums[i - 1]
+    }
+    // right 为右侧所有元素的乘积,刚开始右边没有元素，所以 right = 1
+    let right = 1
+    for (let i = nums.length - 1; i >=0; i--) {
+        res[i] *= right
+        right *= nums[i]
+    }
+
+    return res
+};
+```
+
+解题思路：
+- 始化 res 数组，对于给定索引 res[i] 代表的是 i 左侧所有数字的乘积
+- answer[i]=answer[i]∗R。然后 R 更新为 R=R∗nums[i]，其中变量 R 表示的就是索引右侧数字的乘积
+
+<br>
+
+
+### 25. 乘积最大子数组
+```
+给你一个整数数组 nums ，请你找出数组中乘积最大的非空连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+
+测试用例的答案是一个 32-位 整数。
+
+子数组 是数组的连续子序列。
+
+示例 1:
+输入: nums = [2,3,-2,4]
+输出: 6
+解释: 子数组 [2,3] 有最大乘积 6。
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var maxProduct = function(nums) {
+    const maxArrs = new Array(nums.length)
+    const minArrs = new Array(nums.length)
+    maxArrs[0] = minArrs[0] = nums[0]
+    for (let i = 1; i < nums.length; i++) {
+        maxArrs[i] = Math.max(maxArrs[i - 1] * nums[i], Math.max(nums[i], minArrs[i - 1] * nums[i]))
+        minArrs[i] = Math.min(minArrs[i - 1] * nums[i], Math.min(nums[i], maxArrs[i - 1] * nums[i]))
+    }
+    maxArrs.sort((a, b) => a - b)
+    return maxArrs[nums.length - 1]
+};
+```
+
+解题思路
+动态规划:
+- fmin(i)，它表示以第 i 个元素结尾的乘积最小子数组的乘积,fmax(i)，它表示以第 i 个元素结尾的乘积最大子数组的乘积。
+- fmax(i) = max{fmax(i - 1)*nums[i], fmax(nums[i], fmin(i-1)*nums[i])},
+- fmin(i) = max{fmin(i - 1)*nums[i], fmin(nums[i], fmax(i-1)*nums[i])}
+- 取 fmax 数组中的最大值
