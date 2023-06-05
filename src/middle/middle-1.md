@@ -507,7 +507,7 @@ var findDuplicate = function (nums) {
 
 <br>
 
-### 12. 寻找重复数
+### 12. 最长递增子序列
 
 ```
 给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
@@ -549,7 +549,679 @@ var lengthOfLIS = function (nums) {
 
 <br>
 
-### 13. 字母异位词分组
+### 13. 完全平方数
+
+```
+给你一个整数 n ，返回 和为 n 的完全平方数的最少数量 。
+
+完全平方数 是一个整数，其值等于另一个整数的平方；换句话说，其值等于一个整数自乘的积。例如，1、4、9 和 16 都是完全平方数，而 3 和 11 不是。
+
+示例 1：
+输入：n = 12
+输出：3
+解释：12 = 4 + 4 + 4
+```
+
+```js
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var numSquares = function (n) {
+  const arr = new Array(n + 1).fill(0);
+  for (let i = 1; i <= n; i++) {
+    let min = Number.MAX_VALUE;
+    for (let j = 1; j * j <= i; j++) {
+      min = Math.min(min, arr[i - j * j]);
+    }
+    arr[i] = min + 1;
+  }
+  return arr[n];
+};
+```
+
+解题思路：
+动态规划： arr[i]表示最少需要多少个数的平方来表示整数 i。j 为一个一个平方值的试，最终拿到最小值加上 j 的本身的平方值即 1.
+
+<br>
+
+### 14. 最长连续序列
+
+```
+给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+
+请你设计并实现时间复杂度为 O(n) 的算法解决此问题。
+
+示例 1：
+输入：nums = [100,4,200,1,3,2]
+输出：4
+解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
+```
+
+```js
+ * @param {number[]} nums
+ * @return {number}
+ */
+var longestConsecutive = function(nums) {
+  if (!nums.length) return 0
+  const arr = [...new Set(nums.sort((a,b) => a - b))]
+  const res = new Array(arr.length).fill(1)
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] === arr[i - 1] + 1) {
+      res[i] = res[i - 1] + 1
+    }
+  }
+  return Math.max(...res)
+};
+```
+
+解题思路
+动态规划：
+
+- 去重，因为两个相等的值不算是连续序列
+- 初始化，每个值都对应一个连续序列数
+- 遍历，如果后一个等于前一个值加 1，则当前值为前一个结果+1，否则重新计数
+- 找出最大值
+
+<br>
+
+### 15. 两数相加
+
+```
+给你两个 非空 的链表，表示两个非负的整数。它们每位数字都是按照 逆序 的方式存储的，并且每个节点只能存储 一位 数字。
+
+请你将两个数相加，并以相同形式返回一个表示和的链表。
+
+你可以假设除了数字 0 之外，这两个数都不会以 0 开头。
+
+示例 1：
+输入：l1 = [2,4,3], l2 = [5,6,4]
+输出：[7,0,8]
+解释：342 + 465 = 807.
+```
+
+```js
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} l1
+ * @param {ListNode} l2
+ * @return {ListNode}
+ */
+var addTwoNumbers = function (l1, l2) {
+  let prev = new ListNode(0);
+  let cur = prev;
+  let last = 0;
+  while (l1 != null || l2 != null || last) {
+    const x = l1 == null ? 0 : l1.val;
+    const y = l2 == null ? 0 : l2.val;
+    const sum = x + y + last;
+
+    last = parseInt(sum / 10);
+    cur.next = new ListNode(sum % 10);
+    cur = cur.next;
+    if (l1 != null) {
+      l1 = l1.next;
+    }
+    if (l2 != null) {
+      l2 = l2.next;
+    }
+  }
+  return prev.next;
+};
+```
+
+解题思路
+
+- 一定要 let prev = new ListNode(0)；let cur = prev，这样才能 return 出初始节点
+- 节点存不存在一定要用 null 判断，且用 == 而非 ===
+- 不要使用 && 给节点 next 赋值，因为结果可能为布尔值，导致一直循环
+
+<br>
+
+### 16. 最小路径和
+
+```
+给定一个包含非负整数的 m x n 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
+
+说明：每次只能向下或者向右移动一步。
+
+ 
+
+示例 1：
+输入：grid = [[1,3,1],[1,5,1],[4,2,1]]
+输出：7
+解释：因为路径 1→3→1→1→1 的总和最小。
+```
+
+```js
+/**
+ * @param {number[][]} grid
+ * @return {number}
+ */
+var minPathSum = function (grid) {
+  const m = grid.length;
+  const n = grid[0].length;
+  const dfs = new Array(m).fill(0).map((item) => new Array(n).fill(0));
+  dfs[m - 1][n - 1] = grid[m - 1][n - 1];
+  for (let i = m - 1; i >= 0; i--) {
+    for (let j = n - 1; j >= 0; j--) {
+      if (i === m - 1 && j !== n - 1) {
+        // 最后一行
+        dfs[i][j] = grid[i][j] + dfs[i][j + 1];
+      } else if (i !== m - 1 && j === n - 1) {
+        // 最后一列
+        dfs[i][j] = grid[i][j] + dfs[i + 1][j];
+      } else if (i !== m - 1 && j !== n - 1) {
+        // 中间位置
+        dfs[i][j] = grid[i][j] + Math.min(dfs[i + 1][j], dfs[i][j + 1]);
+      }
+    }
+  }
+  return dfs[0][0];
+};
+```
+
+解题思路
+动态规划：创建二维数组,与原始网格的大小相同，dp[i][j] 表示从终点出发到 (i,j) 位置的最小路径和
+
+<br>
+
+### 17. 最大子数组和
+
+```
+给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+子数组 是数组中的一个连续部分。
+
+示例 1：
+输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出：6
+解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var maxSubArray = function (nums) {
+  const dfs = new Array(nums.length);
+  dfs[0] = nums[0];
+  let res = Number.MIN_SAFE_INTEGER;
+  for (let i = 1; i < nums.length; i++) {
+    if (dfs[i - 1] > 0) {
+      dfs[i] = dfs[i - 1] + nums[i];
+    } else {
+      dfs[i] = nums[i];
+    }
+  }
+
+  for (let i of dfs) {
+    res = Math.max(res, i);
+  }
+  return res;
+};
+```
+
+解题思路
+动态规划：dp[i]：表示以 nums[i] 结尾 的 连续 子数组的最大和
+
+- 如果 dp[i - 1] > 0，那么可以把 nums[i] 直接接在 dp[i - 1] 表示的那个数组的后面，得到和更大的连续子数组；
+- 如果 dp[i - 1] <= 0，那么 nums[i] 加上前面的数 dp[i - 1] 以后值不会变大。于是 dp[i] 「另起炉灶」，此时单独的一个 nums[i] 的值，就是 dp[i]
+
+<br>
+
+### 18. 子集
+
+```
+给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+
+解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+
+示例 1：
+输入：nums = [1,2,3]
+输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+var subsets = function (nums) {
+  let res = [[]];
+  for (let i = 0; i < nums.length; i++) {
+    const temp = JSON.parse(JSON.stringify(res));
+    const next = temp.map((item) => {
+      item.push(nums[i]);
+      return item;
+    });
+    res = res.concat(next);
+  }
+  return res;
+};
+```
+
+解题思路:
+
+- 每添加一个元素，创建一个子集合 next, 为之前每个集合中的子集加该元素，然后合并。举个例子，原本集合为[]，增加元素 1，则为[[],[1]]，增加元素 2，则为[[],[1],[2],[1,2]],以此类推
+- 注意每次遍历创建子集合的时候，一定要深拷贝原集合，避免修改新子集合的时候影响原集合中元素。因为每个集合中的元素都为引用类型
+
+<br>
+
+### 19. 颜色分类
+
+```
+给定一个包含红色、白色和蓝色、共 n 个元素的数组 nums ，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+
+我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
+
+必须在不使用库内置的 sort 函数的情况下解决这个问题。
+
+示例 1：
+输入：nums = [2,0,2,1,1,0]
+输出：[0,0,1,1,2,2]
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var sortColors = function (nums) {
+  let index = 0;
+
+  for (let i = 0; i < nums.length; i++) {
+    if (nums[i] === 0) {
+      let temp = nums[index];
+      nums[index] = 0;
+      nums[i] = temp;
+      index++;
+    }
+  }
+  for (let i = index; i < nums.length; i++) {
+    if (nums[i] === 1) {
+      let temp = nums[index];
+      nums[index] = 1;
+      nums[i] = temp;
+      index++;
+    }
+  }
+  return nums;
+};
+```
+
+解题思路
+对数组进行两次遍历。在第一次遍历中，我们将数组中所有的 0 交换到数组的头部。在第二次遍历中，我们将数组中所有的 1 交换到头部的 0 之后。此时，所有的 2 都出现在数组的尾部，这样我们就完成了排序
+
+<br>
+
+### 20. 全排列
+
+```
+给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
+
+示例 1：
+
+输入：nums = [1,2,3]
+输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+var permute = function (nums) {
+  const res = [];
+  // depth: 深度或第i个位置
+  // path: 每个可能的排列
+  // res: 最终结果
+  // used: 每加一层，这层能填充的可能数值减少，记录之前几层已经用过的值
+  function backtrack(depth, path, used) {
+    if (depth === nums.length) {
+      // 浅拷贝，避免后面pop值后被修改
+      res.push(path.slice());
+      return res;
+    }
+    // 每到一层，遍历每个没有使用过的元素，往排列中填充
+    for (let i = 0; i < nums.length; i++) {
+      if (used[i]) continue;
+      path.push(nums[i]);
+      used[i] = true;
+      backtrack(depth + 1, path, used);
+      // 回到上一层，进行状态重置
+      path.pop(nums[i]);
+      used[i] = false;
+    }
+  }
+  backtrack(0, [], []);
+  return res;
+};
+```
+
+解题思路
+回溯/深度遍历：
+
+- 把每个位置的元素当作一层，第一层即位置 0 可以填充所有的数组元素，第二层填充除第一层外的所有元素，第三层依次类推
+  详见: [回溯](https://leetcode.cn/problems/permutations/solution/quan-pai-lie-by-leetcode-solution-2/)
+
+<br>
+
+### 21. 旋转图像
+
+```
+给定一个 n × n 的二维矩阵 matrix 表示一个图像。请你将图像顺时针旋转 90 度。
+
+你必须在 原地 旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要 使用另一个矩阵来旋转图像。
+
+示例 1：
+输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
+输出：[[7,4,1],[8,5,2],[9,6,3]]
+```
+
+```js
+/**
+ * @param {number[][]} matrix
+ * @return {void} Do not return anything, modify matrix in-place instead.
+ */
+var rotate = function (matrix) {
+  if (matrix.length === 0 || matrix.length !== matrix[0].length) {
+    return;
+  }
+  const len = matrix.length;
+
+  // 沿 / 线翻转
+  for (let i = 0; i < len; i++) {
+    // 注意 j 的遍历终止位置
+    for (let j = 0; j < len - i; j++) {
+      const temp = matrix[i][j];
+      // 注意下标!!!
+      matrix[i][j] = matrix[len - 1 - j][len - 1 - i];
+      matrix[len - 1 - j][len - 1 - i] = temp;
+    }
+  }
+
+  // 水平翻转
+  const mid = parseInt(len / 2);
+  for (let i = 0; i < len / 2; i++) {
+    for (let j = 0; j < len; j++) {
+      const temp = matrix[i][j];
+      matrix[i][j] = matrix[len - 1 - i][j];
+      matrix[len - 1 - i][j] = temp;
+    }
+  }
+  return matrix;
+};
+```
+
+解题思路
+
+- 先沿右上 - 左下的对角线翻转（270°+ 一次镜像），再沿水平中线上下翻转（−180°+ 一次镜像），可以实现顺时针 90 度的旋转效果
+- 注意兑换位置的下标和第二层的遍历截至位置，避免又替换回来
+
+<br>
+
+### 22. 合并区间
+
+```
+以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。请你合并所有重叠的区间，并返回 一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间 。
+
+示例 1：
+输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+输出：[[1,6],[8,10],[15,18]]
+解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+```
+
+```js
+/**
+ * @param {number[][]} intervals
+ * @return {number[][]}
+ */
+var merge = function (intervals) {
+  if (!intervals.length) return [];
+  // 升序排列
+  intervals.sort((a, b) => a[0] - b[0]);
+  const res = [];
+  for (let i = 0; i < intervals.length; i++) {
+    let last = res.length - 1;
+    if (res.length && intervals[i][0] <= res[last][1]) {
+      res[last][1] = Math.max(intervals[i][1], res[last][1]);
+    } else {
+      res.push(intervals[i]);
+    }
+  }
+  return res;
+};
+```
+
+解题思路
+
+- 按照左节点进行升序排序
+- 比较当前左节点与上一个序列中右节点，如果前者小于等于，则将上一个序列中的右节点替换成【当前右节点，上个序列右节点】的最大值。否则，将该节点添加到结果数组中
+
+<br>
+
+### 23. 单词搜索
+
+```
+给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false 。
+
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+
+
+示例 1：
+输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
+输出：true
+```
+
+```js
+/**
+ * @param {character[][]} board
+ * @param {string} word
+ * @return {boolean}
+ */
+var exist = function (board, word) {
+  const h = board.length;
+  const w = board[0].length;
+  const visited = new Array(h);
+  for (let i = 0; i < visited.length; ++i) {
+    visited[i] = new Array(w).fill(false);
+  }
+  const directions = [
+    [0, 1],
+    [0, -1],
+    [1, 0],
+    [-1, 0],
+  ];
+
+  function check(i, j, k) {
+    let res = false;
+    if (board[i][j] !== word.charAt(k)) {
+      return false;
+    } else if (k === word.length - 1) {
+      return true;
+    }
+    visited[i][j] = true;
+
+    for (let [dx, dy] of directions) {
+      const newi = i + dx;
+      const newj = j + dy;
+      if (newi >= 0 && newi < h && newj >= 0 && newj < w) {
+        if (!visited[newi][newj]) {
+          const flag = check(newi, newj, k + 1);
+          if (flag) {
+            res = true;
+            break;
+          }
+        }
+      }
+    }
+    visited[i][j] = false;
+    return res;
+  }
+
+  for (let i = 0; i < h; i++) {
+    for (let j = 0; j < w; j++) {
+      const result = check(i, j, 0);
+      if (result) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+```
+
+解题思路：
+
+- 设函数 check(i,j,k) 表示判断以网格的 (i,j) 位置出发，能否搜索到单词 word[k..]，其中
+  word[k..] 表示字符串 word 从第 k 个字符开始的后缀子串。如果能搜索到，则返回 true，反之返回
+  false。
+- 为了防止重复遍历相同的位置，需要额外维护一个与 board 等大的 visited 数组，用于标识每个位置是否被访问过。每次遍历相邻位置时，需要跳过已经被访问的位置。
+- 第三，为什么 visit 需要复位？因为当前格子作为中途某一处的起始点，并且走不通时，它是可以回退到上一个格子，并且选择其他方向重新开始的。而此时我们不希望当前格子的遍历路径影响到回退后新路径的尝试。
+
+<br>
+
+### 24. 和为 K 的子数组
+
+```
+给你一个整数数组 nums 和一个整数 k ，请你统计并返回 该数组中和为 k 的连续子数组的个数 。
+
+示例 1：
+输入：nums = [1,1,1], k = 2
+输出：2
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+var subarraySum = function (nums, k) {
+  let count = 0;
+  for (let i = 0; i < nums.length; i++) {
+    let temp = 0;
+    for (let j = i; j < nums.length; j++) {
+      temp += nums[j];
+      if (temp === k) {
+        count++;
+      }
+    }
+  }
+  return count;
+};
+```
+
+解题思路：
+
+- 依次计算每个位置开头的子数组的和的可能性
+
+<br>
+
+### 25. 除自身以外数组的乘积
+
+```
+给你一个整数数组 nums，返回 数组 answer ，其中 answer[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积 。
+
+题目数据 保证 数组 nums之中任意元素的全部前缀元素和后缀的乘积都在  32 位 整数范围内。
+
+请不要使用除法，且在 O(n) 时间复杂度内完成此题。
+
+
+示例 1:
+输入: nums = [1,2,3,4]
+输出: [24,12,8,6]
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+var productExceptSelf = function (nums) {
+  const res = new Array(nums.length);
+  res[0] = 1;
+
+  // res[i] 表示索引 i 左侧所有元素的乘积,因为索引为 '0' 的元素左侧没有元素， 所以 res[0] = 1
+  for (let i = 1; i < nums.length; i++) {
+    res[i] = res[i - 1] * nums[i - 1];
+  }
+  // right 为右侧所有元素的乘积,刚开始右边没有元素，所以 right = 1
+  let right = 1;
+  for (let i = nums.length - 1; i >= 0; i--) {
+    res[i] *= right;
+    right *= nums[i];
+  }
+
+  return res;
+};
+```
+
+解题思路：
+
+- 始化 res 数组，对于给定索引 res[i] 代表的是 i 左侧所有数字的乘积
+- answer[i]=answer[i]∗R。然后 R 更新为 R=R∗nums[i]，其中变量 R 表示的就是索引右侧数字的乘积
+
+<br>
+
+### 26. 乘积最大子数组
+
+```
+给你一个整数数组 nums ，请你找出数组中乘积最大的非空连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+
+测试用例的答案是一个 32-位 整数。
+
+子数组 是数组的连续子序列。
+
+示例 1:
+输入: nums = [2,3,-2,4]
+输出: 6
+解释: 子数组 [2,3] 有最大乘积 6。
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var maxProduct = function (nums) {
+  const maxArrs = new Array(nums.length);
+  const minArrs = new Array(nums.length);
+  maxArrs[0] = minArrs[0] = nums[0];
+  for (let i = 1; i < nums.length; i++) {
+    maxArrs[i] = Math.max(
+      maxArrs[i - 1] * nums[i],
+      Math.max(nums[i], minArrs[i - 1] * nums[i])
+    );
+    minArrs[i] = Math.min(
+      minArrs[i - 1] * nums[i],
+      Math.min(nums[i], maxArrs[i - 1] * nums[i])
+    );
+  }
+  maxArrs.sort((a, b) => a - b);
+  return maxArrs[nums.length - 1];
+};
+```
+
+解题思路
+动态规划:
+
+- fmin(i)，它表示以第 i 个元素结尾的乘积最小子数组的乘积,fmax(i)，它表示以第 i 个元素结尾的乘积最大子数组的乘积。
+- fmax(i) = max{fmax(i - 1)*nums[i], fmax(nums[i], fmin(i-1)*nums[i])},
+- fmin(i) = max{fmin(i - 1)*nums[i], fmin(nums[i], fmax(i-1)*nums[i])}
+- 取 fmax 数组中的最大值
+
+<br>
+
+### 27. 字母异位词分组
 
 ```
 给你一个字符串数组，请你将 字母异位词 组合在一起。可以按任意顺序返回结果列表。
@@ -561,7 +1233,6 @@ var lengthOfLIS = function (nums) {
 ```
 
 ```js
-/**
  * @param {string[]} strs
  * @return {string[][]}
  */
@@ -576,10 +1247,9 @@ var groupAnagrams = function (strs) {
     map.set(key, list);
   }
   return Array.from(map.values());
-};
 ```
 
-解题思路：
+解读：
 
 - 异位词：简单而言就是字母相同，顺序不同的单词
 - 将每个字符串排序，并将排序后的值作为 key 值，将相同 key 值的字符串放到一个数组里面即可
